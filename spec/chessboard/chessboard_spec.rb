@@ -10,5 +10,11 @@ describe Chessboard do
     end
   end
 
+  context "#print_board" do
+  it "prints to stdout" do
+    expect { board.print_board }.to output.to_stdout
+  end
+end
+
 
 end

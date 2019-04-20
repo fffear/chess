@@ -11,19 +11,47 @@ class Chessboard
     @chessboard = create_chessboard
   end
 
+  def print_board
+    (8).downto(0).each do |n|
+      puts (n.zero?) ? "#{row_separator}\n#{column_letters}" : "#{row_separator}\n#{generate_row(n)}"
+    end
+  end
+
   private
   def create_row(row_num)
     row = []
     ("a".."h").each { |l| row << Tile.new([l, row_num], " ") }
     row
   end
-
+  
   def create_chessboard
     chessboard = []
     (1..8).each { |n| chessboard += create_row(n) }
     chessboard
   end
+  
+  def row_start(num)
+    (num - 1) * 8
+  end
+  
+  def row_end(num)
+    num * 8
+  end
+  
+  def row_separator
+    "   +---+---+---+---+---+---+---+---+"
+  end
+  
+  def column_letters
+    "     a   b   c   d   e   f   g   h"
+  end
+
+  def generate_row(n)
+    row = " #{n} |"
+    self.chessboard[row_start(n)...row_end(n)].each { |tile| row += " #{tile.piece} |" }
+    row
+  end
 end
 
-# test = Chessboard.new
-# p test.chessboard
+#           test = Chessboard.new
+#           test.print_board
