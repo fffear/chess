@@ -11,7 +11,7 @@ describe Tile do
   end
 
   context "#piece" do
-    it "returns a reassigned string that is not blank when previously not blank" do
+    it "returns a reassigned string that is not blank when previously blank" do
       tile.piece = "A"
       expect(tile.piece).not_to include(" ")
     end
