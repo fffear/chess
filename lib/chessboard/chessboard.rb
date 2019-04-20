@@ -1,4 +1,6 @@
 # This is the class for the entire chessboard
+# The @chessboard instance variable is the vertex list
+
 $LOAD_PATH << "#{File.expand_path('../../chessboard', __FILE__)}"
 require 'tile.rb'
 
