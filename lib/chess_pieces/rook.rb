@@ -4,7 +4,7 @@
 #Black Rook
 #p "\u265C".encode('utf-8')
 
-$LOAD_PATH << "#{File.expand_path('../../chess_pieces', __FILE__)}"
+$: << "#{File.expand_path('../../chess_pieces', __FILE__)}"
 require 'generate_moves'
 
 class Rook

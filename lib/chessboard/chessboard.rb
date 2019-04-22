@@ -1,7 +1,7 @@
 # This is the class for the entire chessboard
 # The @chessboard instance variable is the vertex list
 
-$LOAD_PATH << "#{File.expand_path('../../chessboard', __FILE__)}"
+$: << "#{File.expand_path('../../chessboard', __FILE__)}"
 require 'tile.rb'
 
 class Chessboard
@@ -20,7 +20,7 @@ class Chessboard
   private
   def create_row(row_num)
     row = []
-    ("a".."h").each { |l| row << Tile.new([l, row_num], " ") }
+    ("a".."h").each { |l| row << Tile.new([l, row_num], " ", []) }
     row
   end
   
@@ -53,5 +53,5 @@ class Chessboard
   end
 end
 
-#           test = Chessboard.new
-#           test.print_board
+           test = Chessboard.new
+           test.print_board
