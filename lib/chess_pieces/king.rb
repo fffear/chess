@@ -15,6 +15,7 @@ class King
     @piece = piece
     @starting_positions = Chessboard.new.chessboard
     @move_count = 0
+    generate_moves
   end
 
   def generate_moves
@@ -58,5 +59,4 @@ class King
 end
 
 king = King.new("\u2654".encode('utf-8'))
-king.generate_moves
 p king.all_possible_moves
