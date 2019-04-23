@@ -17,9 +17,6 @@ class Bishop
     @starting_positions = Chessboard.new.chessboard
   end
 
-  #def generate_all_moves(starting_positions)
-  #end
-
   def all_possible_moves
     @starting_positions
   end
@@ -27,4 +24,4 @@ end
 
 bishop = Bishop.new("\u2657".encode('utf-8'))
 p bishop.generate_all_diagonal_moves
-p bishop.starting_positions[27]
+p bishop.starting_positions

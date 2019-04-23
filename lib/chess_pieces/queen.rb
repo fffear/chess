@@ -30,4 +30,4 @@ class Queen
 end
 
 queen = Queen.new("\u265B".encode('utf-8'))
-p queen.all_possible_moves[0]
+p queen.all_possible_moves
