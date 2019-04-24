@@ -48,8 +48,16 @@ class Chessboard
 
   def generate_row(n)
     row = " #{n} |"
-    self.chessboard[row_start(n)...row_end(n)].each { |tile| row += " #{tile.piece} |" }
+    self.chessboard[row_start(n)...row_end(n)].each { |tile| row += " #{display_chess_pieces_or_spaces(tile)} |" }
     row
+  end
+
+  def display_chess_pieces_or_spaces(tile)
+    if tile.piece == " "
+      " "
+    else
+      "#{tile.piece.piece}"
+    end
   end
 end
 

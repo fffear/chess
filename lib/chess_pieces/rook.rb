@@ -29,4 +29,4 @@ class Rook
 end
 
 rook = Rook.new("\u2656".encode('utf-8'))
-p rook.all_possible_moves[0]
+p rook
