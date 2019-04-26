@@ -5,10 +5,10 @@ $: << "#{File.expand_path('../../chessboard', __FILE__)}"
 require 'tile.rb'
 
 class Chessboard
-  attr_accessor :chessboard
+  attr_accessor :board
 
   def initialize
-    @chessboard = create_chessboard
+    @board = create_chessboard
   end
 
   def print_board
@@ -48,7 +48,7 @@ class Chessboard
 
   def generate_row(n)
     row = " #{n} |"
-    self.chessboard[row_start(n)...row_end(n)].each { |tile| row += " #{display_chess_pieces_or_spaces(tile)} |" }
+    self.board[row_start(n)...row_end(n)].each { |tile| row += " #{display_chess_pieces_or_spaces(tile)} |" }
     row
   end
 
@@ -61,5 +61,5 @@ class Chessboard
   end
 end
 
-           test = Chessboard.new
-           test.print_board
+           #test = Chessboard.new
+           #test.print_board

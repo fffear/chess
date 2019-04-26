@@ -12,7 +12,7 @@ class Knight
 
   def initialize(piece)
     @piece = piece
-    @starting_positions = Chessboard.new.chessboard
+    @starting_positions = Chessboard.new.board
     generate_all_knight_moves
   end
 
@@ -47,5 +47,5 @@ class Knight
   end
 end
 
-knight = Knight.new("\u2658".encode('utf-8'))
-p knight.starting_positions
+#knight = Knight.new("\u2658".encode('utf-8'))
+#p knight.starting_positions

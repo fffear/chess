@@ -13,7 +13,7 @@ class Pawn
 
   def initialize(piece)
     @piece = piece
-    @starting_positions = Chessboard.new.chessboard
+    @starting_positions = Chessboard.new.board
     generate_moves
     @move_count = 0
   end
@@ -61,8 +61,8 @@ class BlackPawn < Pawn
   end
 end
 
-pawn = WhitePawn.new("\u2659".encode('utf-8'))
-p pawn.all_possible_moves[8]
+#pawn = WhitePawn.new("\u2659".encode('utf-8'))
+#p pawn.all_possible_moves[8]
 
 #pawn2 = BlackPawn.new("\u265F".encode('utf-8'))
 #pawn2.generate_moves

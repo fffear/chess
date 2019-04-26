@@ -14,7 +14,7 @@ class Rook
 
   def initialize(piece)
     @piece = piece
-    @starting_positions = Chessboard.new.chessboard
+    @starting_positions = Chessboard.new.board
     generate_all_moves(starting_positions)
   end
 
@@ -28,5 +28,5 @@ class Rook
   end
 end
 
-rook = Rook.new("\u2656".encode('utf-8'))
-p rook
+#rook = Rook.new("\u2656".encode('utf-8'))
+#p rook

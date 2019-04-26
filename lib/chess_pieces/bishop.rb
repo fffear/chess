@@ -14,7 +14,7 @@ class Bishop
 
   def initialize(piece)
     @piece = piece
-    @starting_positions = Chessboard.new.chessboard
+    @starting_positions = Chessboard.new.board
     generate_all_diagonal_moves
   end
 
@@ -23,6 +23,6 @@ class Bishop
   end
 end
 
-bishop = Bishop.new("\u2657".encode('utf-8'))
+#bishop = Bishop.new("\u2657".encode('utf-8'))
 #p bishop.generate_all_diagonal_moves
-p bishop.starting_positions[1]
+#p bishop.starting_positions[1]

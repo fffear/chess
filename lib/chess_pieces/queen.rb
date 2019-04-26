@@ -14,7 +14,7 @@ class Queen
 
   def initialize(piece)
     @piece = piece
-    @starting_positions = Chessboard.new.chessboard
+    @starting_positions = Chessboard.new.board
     generate_all_moves(starting_positions)
   end
 
@@ -29,5 +29,5 @@ class Queen
   end
 end
 
-queen = Queen.new("\u265B".encode('utf-8'))
-p queen.all_possible_moves
+#queen = Queen.new("\u265B".encode('utf-8'))
+#p queen.all_possible_moves
