@@ -12,6 +12,7 @@ require 'king'
 require 'pawn'
 require 'player'
 require 'move_rook'
+require 'move_knight'
 require 'chess_pieces'
 
 class Chess
@@ -59,8 +60,9 @@ class Chess
   private
   def generate_white_pieces
     (0..57).each do |n|
-      @board.board[n].piece = Rook.new(WHITE_PIECES[0]) if n == 0 #n.zero? # || n == 7
-      @board.board[n].piece = Knight.new(WHITE_PIECES[1]) if n == 56 #|| n == 6
+      @board.board[n].piece = Knight.new(WHITE_PIECES[1]) if n == 0 #n.zero? # || n == 7
+      @board.board[n].piece = Rook.new(WHITE_PIECES[0]) if n == 1 || n == 8 || n == 9 #|| n == 6
+      
       #@board.chessboard[n].piece = Bishop.new("\u2657".encode('utf-8')) if n == 2 || n == 5
       #@board.chessboard[n].piece = Queen.new("\u2655".encode('utf-8')) if n == 3
       #@board.chessboard[n].piece = King.new("\u2654".encode('utf-8')) if n == 4
@@ -88,7 +90,7 @@ chess = Chess.new
 chess.generate_starting_board
 chess.board.print_board
 #p chess.board.chessboard[0].piece #.starting_positions #[0].coordinates
-chess.move_piece("a1", "a7")
+chess.move_piece("a1", "c3")
 chess.board.print_board
 #p chess.board
 

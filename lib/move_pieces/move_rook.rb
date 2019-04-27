@@ -29,7 +29,7 @@ class MoveRook
     return puts "The coordinates entered are invalid." unless valid_coordinate?(@origin) && valid_coordinate?(@destination)
     @start = convert_coordinates_to_num(@origin)
     @final = convert_coordinates_to_num(@destination)
-    return "This is not a rook" unless board.board[@start].piece.piece == @own_pieces[0]
+    return unless board.board[@start].piece.piece == @own_pieces[0]
     return puts "Can't move selected piece there." unless valid_move?
     return move_piece_if_no_blocking_pieces(8) if valid_move? && vertical_move?
     return move_piece_if_no_blocking_pieces(1) if valid_move? && horizontal_move?

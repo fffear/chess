@@ -1,5 +1,4 @@
 module ChessPieces
-  
   WHITE_PIECES = ["\u2656".encode('utf-8'),   # White Rook
                   "\u2658".encode('utf-8'),   # White Knight
                   "\u2657".encode('utf-8'),   # White Bishop

@@ -1,22 +1,17 @@
 $: << "#{File.expand_path('../../../lib/move_pieces', __FILE__)}"
 $: << "#{File.expand_path('../../../lib', __FILE__)}"
+$: << "#{File.expand_path('../../../lib/chess_pieces', __FILE__)}"
 
 require 'move_rook'
 require 'play_game'
 require 'chess_pieces'
+require 'coordinates'
 
-describe "MoveRook" do
+describe MoveRook do
+  include Coordinates
+  include ChessPieces
   let(:chess) { Chess.new }
   let(:move_rook) {MoveRook.new(0, 0, chess.board, ChessPieces::WHITE_PIECES)}
-
-  def generate_coordinates(n, l)
-    l + n.to_s
-  end
-
-  def convert_coordinates_to_num(coordinates)
-    letters = ["a", "b", "c", "d", "e", "f", "g", "h"]
-    (coordinates[1].to_i - 1) * 8 + letters.index(coordinates[0])
-  end
 
   describe "#compute" do
     context "move vertically" do
@@ -134,4 +129,3 @@ describe "MoveRook" do
     end
   end
 end
-
