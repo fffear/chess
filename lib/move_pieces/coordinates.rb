@@ -5,6 +5,10 @@ module Coordinates
     l + n.to_s
   end
 
+  def array_of_coordinates
+    ("a1".."h8").to_a.reject! { |c| c =~ /[90]/}
+  end
+
   def convert_coordinates_to_num(coordinate)
     (coordinate[1].to_i - 1) * 8 + LETTERS.index(coordinate[0])
   end

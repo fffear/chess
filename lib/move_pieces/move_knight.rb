@@ -49,11 +49,9 @@ class MoveKnight
 
   def up_move?
     @final > @start && [6, 10, 15, 17].include?(@final - @start)
-    #(@final > @start && @final - @start >= 8) || (@final < @start && @start - @final >= 8)
   end
 
   def down_move?
     @final < @start && [-6, -10, -15, -17].include?(@final - @start)
-  #  (@final > @start && @final - @start <= 7) || (@final < @start && @start - @final <= 7)
   end
 end
