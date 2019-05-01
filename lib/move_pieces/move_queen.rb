@@ -13,7 +13,7 @@ require 'coordinates'
 #require 'king'
 #require 'pawn'
 
-class MoveBishop
+class MoveQueen
   include ChessPieces
   include Coordinates
   attr_accessor :board, :origin, :destination, :own_pieces
@@ -26,12 +26,13 @@ class MoveBishop
   end
 
   def compute
-    return if board.board[convert_coordinates_to_num(@origin)].piece == " "
     return puts "The coordinates entered are invalid." unless valid_coordinate?(@origin) && valid_coordinate?(@destination)
     @start = convert_coordinates_to_num(@origin)
     @final = convert_coordinates_to_num(@destination)
-    return unless board.board[@start].piece.piece == @own_pieces[2]
+    return unless board.board[@start].piece.piece == @own_pieces[3]
     return puts "Can't move selected piece there." unless valid_move?
+    return move_piece_if_no_blocking_pieces(8) if valid_move? && vertical_move?
+    return move_piece_if_no_blocking_pieces(1) if valid_move? && horizontal_move?
     return move_piece_if_no_blocking_pieces(9) if valid_move? && diagonal_bot_left_to_top_right_move?
     return move_piece_if_no_blocking_pieces(7) if valid_move? && diagonal_bot_right_to_top_left__move?
   end
@@ -68,11 +69,20 @@ class MoveBishop
     board.board[@start].piece.starting_positions[@start].possible_moves.include?(@final)
   end
 
+  def vertical_move?
+    (@final > @start && [8, 16, 24, 32, 40, 48, 56].one? { |n| @final == @start + n }) ||
+    (@start > @final && [-8, -16, -24, -32, -40, -48, -56].one? { |n| @final == @start + n })
+  end
+
+  def horizontal_move?
+    (@final > @start && (1..7).one? { |n| @final == @start + n }) ||
+    (@start > @final && [-1, -2, -3, -4, -5, -6, -7].one? { |n| @final == @start + n })
+  end
+
   def diagonal_bot_left_to_top_right_move?
     (@final > @start && [9, 18, 27, 36, 45, 54, 63].one? { |n| @final == @start + n }) ||
     (@start > @final && [-9, -18, -27, -36, -45, -54, -63].one? { |n| @final == @start + n })
   end
-
 
   def diagonal_bot_right_to_top_left__move?
     (@final > @start && [7, 14, 21, 28, 35, 42, 49].one? { |n| @final == @start + n }) ||
