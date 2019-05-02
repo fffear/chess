@@ -62,4 +62,5 @@ class Chessboard
 end
 
            #test = Chessboard.new
+           #p test
            #test.print_board

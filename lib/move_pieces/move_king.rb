@@ -26,6 +26,7 @@ class MoveKing
   end
 
   def compute
+    return if board.board[convert_coordinates_to_num(@origin)].piece == " "
     return puts "The coordinates entered are invalid." unless valid_coordinate?(@origin) && valid_coordinate?(@destination)
     @start = convert_coordinates_to_num(@origin)
     @final = convert_coordinates_to_num(@destination)
@@ -70,27 +71,19 @@ class MoveKing
   end
 
   def vertical_move?
-    #(@final > @start && [8, 16, 24, 32, 40, 48, 56].one? { |n| @final == @start + n }) ||
-    #(@start > @final && [-8, -16, -24, -32, -40, -48, -56].one? { |n| @final == @start + n })
     [8, -8].one? { |n| @final == @start + n }
   end
 
   def horizontal_move?
-    #(@final > @start && (1..7).one? { |n| @final == @start + n }) ||
-    #(@start > @final && [-1, -2, -3, -4, -5, -6, -7].one? { |n| @final == @start + n })
     [1, -1].one? { |n| @final == @start + n }
 
   end
 
   def diagonal_bot_left_to_top_right_move?
-    #(@final > @start && [9, 18, 27, 36, 45, 54, 63].one? { |n| @final == @start + n }) ||
-    #(@start > @final && [-9, -18, -27, -36, -45, -54, -63].one? { |n| @final == @start + n })
     [9, -9].one? { |n| @final == @start + n }
   end
 
   def diagonal_bot_right_to_top_left__move?
-    #(@final > @start && [7, 14, 21, 28, 35, 42, 49].one? { |n| @final == @start + n }) ||
-    #(@start > @final && [-7, -14, -21, -28, -35, -42, -49].one? { |n| @final == @start + n })
     [7, -7].one? { |n| @final == @start + n }
   end
 end

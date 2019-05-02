@@ -8,8 +8,14 @@ require 'player'
 require 'chess_pieces'
 require 'rook'
 require 'knight'
+require 'bishop'
+require 'queen'
+require 'king'
 require 'move_rook'
 require 'move_knight'
+require 'move_bishop'
+require 'move_queen'
+require 'move_king'
 
 describe Player do
   let(:chessboard) { Chessboard.new }
@@ -20,7 +26,9 @@ describe Player do
     
     it "moves a black rook piece" do
       chessboard.board[0].piece = Rook.new(ChessPieces::BLACK_PIECES[0])
+      chessboard.print_board
       expect {player_2.move_piece("a1", "a8", chessboard, ChessPieces::BLACK_PIECES)}.to change {chessboard.board[0].piece}.and change {chessboard.board[56].piece}
+      chessboard.print_board
     end
 
     it "fails to move a white rook piece as the black player" do
@@ -48,7 +56,7 @@ describe Player do
       expect {player_2.move_piece("a1", "b3", chessboard, ChessPieces::WHITE_PIECES)}.to_not change {chessboard.board[0].piece} #.and change {chessboard.board[56].piece}
     end
 
-    it "moves a white kni ghtpiece" do
+    it "moves a white knight piece" do
       chessboard.board[0].piece = Knight.new(ChessPieces::WHITE_PIECES[1])
       expect {player_1.move_piece("a1", "b3", chessboard, ChessPieces::WHITE_PIECES)}.to change {chessboard.board[0].piece}.and change {chessboard.board[17].piece}
     end

@@ -17,6 +17,7 @@ require 'move_knight'
 require 'move_bishop'
 require 'move_queen'
 require 'move_king'
+require 'move_pawn'
 
 class Chess
   include ChessPieces
@@ -48,7 +49,7 @@ class Chess
   end
 
   def move_piece(origin, destination)
-    player_2.move_piece(origin, destination, @board, player_2.pieces)
+    player_1.move_piece(origin, destination, @board, player_1.pieces)
   end
 
   def vertical_move?(start, final)
@@ -62,13 +63,18 @@ class Chess
   private
   def generate_white_pieces
     (0..63).each do |n|
-      @board.board[n].piece = Queen.new(BLACK_PIECES[4]) if n == 15  #n.zero? # || n == 7
+      #@board.board[n].piece = Queen.new(BLACK_PIECES[3]) if n == 0  #n.zero? # || n == 7
       @board.board[n].piece = Knight.new(WHITE_PIECES[1]) if n == 35 #|| n == 6
       
       #@board.chessboard[n].piece = Bishop.new("\u2657".encode('utf-8')) if n == 2 || n == 5
       #@board.chessboard[n].piece = Queen.new("\u2655".encode('utf-8')) if n == 3
       #@board.chessboard[n].piece = King.new("\u2654".encode('utf-8')) if n == 4
-      #@board.chessboard[n].piece = WhitePawn.new("\u2659".encode('utf-8')) if n >= 8
+      #@board.board[n].piece = Rook.new(WHITE_PIECES[0]) if n == 16
+      #@board.board[n].piece = Pawn.new("\u2659".encode('utf-8')) if n == 16
+      #@board.board[n].piece =Knight.new(BLACK_PIECES[1]) if n == 24
+
+      @board.board[n].piece = Pawn.new(WHITE_PIECES[5]) if n == 25
+      @board.board[n].piece = Knight.new(WHITE_PIECES[1]) if n == 34
     end
   end
 
@@ -91,9 +97,11 @@ end
 chess = Chess.new
 chess.generate_starting_board
 chess.board.print_board
+#p chess.board.board[8].piece.move_count
 #p chess.board.chessboard[0].piece #.starting_positions #[0].coordinates
-chess.move_piece("h2", "i2")
+chess.move_piece("b4", "c5")
 chess.board.print_board
+#p chess.board.board[16]
 #[@start].piece.starting_positions[@start].possible_moves.include?(@final)
 #p chess.board
 

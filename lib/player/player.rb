@@ -23,6 +23,7 @@ class Player
     MoveBishop.new(origin, destination, board, pieces).compute
     MoveQueen.new(origin, destination, board, pieces).compute
     MoveKing.new(origin, destination, board, pieces).compute
+    MovePawn.new(origin, destination, board, pieces).compute
   end
 
   private

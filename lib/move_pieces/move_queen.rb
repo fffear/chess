@@ -26,6 +26,7 @@ class MoveQueen
   end
 
   def compute
+    return if board.board[convert_coordinates_to_num(@origin)].piece == " "
     return puts "The coordinates entered are invalid." unless valid_coordinate?(@origin) && valid_coordinate?(@destination)
     @start = convert_coordinates_to_num(@origin)
     @final = convert_coordinates_to_num(@destination)
