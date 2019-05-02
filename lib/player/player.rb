@@ -22,6 +22,7 @@ class Player
     MoveKnight.new(origin, destination, board, pieces).compute #if board.board[convert_coordinates_to_num(origin)].piece == knight?
     MoveBishop.new(origin, destination, board, pieces).compute
     MoveQueen.new(origin, destination, board, pieces).compute
+    MoveKing.new(origin, destination, board, pieces).compute
   end
 
   private
