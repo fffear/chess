@@ -21,12 +21,13 @@ require 'move_pawn'
 
 class Chess
   include ChessPieces
-  attr_accessor :board, :player_1, :player_2
+  attr_accessor :board, :player_1, :player_2, :turn_count
 
   def initialize
     @board = Chessboard.new
-    @player_1 = Player.new("white", WHITE_PIECES)
-    @player_2 = Player.new("black", BLACK_PIECES)
+    @player_1 = Player.new("white", WHITE_PIECES, BLACK_PIECES)
+    @player_2 = Player.new("black", BLACK_PIECES, WHITE_PIECES)
+    @turn_count = 0
   end
 
   def generate_starting_board
@@ -48,8 +49,38 @@ class Chess
     end
   end
 
-  def move_piece(origin, destination)
-    player_1.move_piece(origin, destination, @board, player_1.pieces)
+  def take_turns
+    loop do
+      puts "Please enter the coordinates of the piece you would like to move"
+      origin = gets.chomp
+      puts "Please enter the coordinates on the board you would like to move the selected piece to"
+      destination = gets.chomp
+      @turn_count += 1
+      move_piece(origin, destination, 1)
+      board.print_board
+      #puts "Time first move: #{board.board[27].piece.original_position}"
+      break if @turn_count == 10
+
+      puts "Please enter the coordinates of the piece you would like to move"
+      origin = gets.chomp
+      puts "Please enter the coordinates on the board you would like to move the selected piece to"
+      destination = gets.chomp
+      @turn_count += 1
+      move_piece(origin, destination, 2)
+      board.print_board
+
+
+      #puts turn_count
+      break if @turn_count == 10
+    end
+  end
+
+  def move_piece(origin, destination, player)
+    if player == 1
+      player_1.move_piece(origin, destination, @board, player_1.pieces, player_2.pieces, @turn_count)
+    else
+      player_2.move_piece(origin, destination, @board, player_2.pieces, player_1.pieces, @turn_count)
+    end
   end
 
   def vertical_move?(start, final)
@@ -62,31 +93,27 @@ class Chess
 
   private
   def generate_white_pieces
-    (0..63).each do |n|
-      #@board.board[n].piece = Queen.new(BLACK_PIECES[3]) if n == 0  #n.zero? # || n == 7
-      @board.board[n].piece = Knight.new(WHITE_PIECES[1]) if n == 35 #|| n == 6
-      
-      #@board.chessboard[n].piece = Bishop.new("\u2657".encode('utf-8')) if n == 2 || n == 5
-      #@board.chessboard[n].piece = Queen.new("\u2655".encode('utf-8')) if n == 3
-      #@board.chessboard[n].piece = King.new("\u2654".encode('utf-8')) if n == 4
-      #@board.board[n].piece = Rook.new(WHITE_PIECES[0]) if n == 16
-      #@board.board[n].piece = Pawn.new("\u2659".encode('utf-8')) if n == 16
-      #@board.board[n].piece =Knight.new(BLACK_PIECES[1]) if n == 24
-
-      @board.board[n].piece = Pawn.new(WHITE_PIECES[5]) if n == 25
-      @board.board[n].piece = Knight.new(WHITE_PIECES[1]) if n == 34
+    (0..15).each do |n|
+      @board.board[n].piece = Rook.new(WHITE_PIECES[0]) if n.zero? || n == 7
+      @board.board[n].piece = Knight.new(WHITE_PIECES[1]) if n == 1 || n == 6
+      @board.board[n].piece = Bishop.new(WHITE_PIECES[2]) if n == 2 || n == 5
+      @board.board[n].piece = Queen.new(WHITE_PIECES[3]) if n == 3
+      @board.board[n].piece = King.new(WHITE_PIECES[4]) if n == 4
+      @board.board[n].piece = Pawn.new(WHITE_PIECES[5], convert_coordinates_to_num(@board.board[n].coordinates[0] + @board.board[n].coordinates[1].to_s)) if n >= 8 #n >= 8 || n == 35
+      #@board.board[n].piece = Pawn.new(WHITE_PIECES[5]) if n == 25
+      #@board.board[n].piece = Knight.new(WHITE_PIECES[1]) if n == 34
     end
   end
 
   def generate_black_pieces
-    #(48..63).each do |n|
-    #  @board.chessboard[n].piece = Rook.new("\u265C".encode('utf-8')) if n == 63 || n == 56
-    #  @board.chessboard[n].piece = Knight.new("\u265E".encode('utf-8')) if n == 62 || n == 57
-    #  @board.chessboard[n].piece = Bishop.new("\u265D".encode('utf-8')) if n == 61 || n == 58
-    #  @board.chessboard[n].piece = Queen.new("\u265B".encode('utf-8')) if n == 59
-    #  @board.chessboard[n].piece = King.new("\u265A".encode('utf-8')) if n == 60
-    #  @board.chessboard[n].piece = BlackPawn.new("\u265F".encode('utf-8')) if n <= 55
-    #end
+    (48..63).each do |n|
+      @board.board[n].piece = Rook.new(BLACK_PIECES[0]) if n == 63 || n == 56
+      @board.board[n].piece = Knight.new(BLACK_PIECES[1]) if n == 62 || n == 57
+      @board.board[n].piece = Bishop.new(BLACK_PIECES[2]) if n == 61 || n == 58
+      @board.board[n].piece = Queen.new(BLACK_PIECES[3]) if n == 59
+      @board.board[n].piece = King.new(BLACK_PIECES[4]) if n == 60
+      @board.board[n].piece = Pawn.new(BLACK_PIECES[5], convert_coordinates_to_num(@board.board[n].coordinates[0] + @board.board[n].coordinates[1].to_s)) if n <= 55
+    end
   end
 end
 
@@ -94,13 +121,20 @@ end
 #board = Chessboard.new
 #p board.chessboard[0].piece = Rook.new("\u265C".encode('utf-8'))
 
-chess = Chess.new
-chess.generate_starting_board
-chess.board.print_board
+#chess = Chess.new
+#chess.generate_starting_board
+#chess.board.print_board
+
 #p chess.board.board[8].piece.move_count
 #p chess.board.chessboard[0].piece #.starting_positions #[0].coordinates
-chess.move_piece("b4", "c5")
-chess.board.print_board
+
+#chess.take_turns
+
+#p chess.board.board[35].piece.move_count
+#p chess.board.board[8].piece.move_count
+
+#chess.move_piece("d2", "d4", 1)
+#chess.board.print_board
 #p chess.board.board[16]
 #[@start].piece.starting_positions[@start].possible_moves.include?(@final)
 #p chess.board

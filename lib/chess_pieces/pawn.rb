@@ -14,13 +14,15 @@ require 'chess_pieces'
 class Pawn
   include Coordinates
   include ChessPieces
-  attr_reader :piece, :starting_positions
-  attr_accessor :move_count
+  attr_reader :piece, :starting_positions, :original_position
+  attr_accessor :move_count, :time_first_move
 
-  def initialize(piece)
+  def initialize(piece, original_position)
     @piece = piece
     @starting_positions = Chessboard.new.board
     @move_count = 0
+    @time_first_move = 0
+    @original_position = original_position
     generate_moves
   end
 

@@ -16,13 +16,15 @@ require 'coordinates'
 class MovePawn
   include ChessPieces
   include Coordinates
-  attr_accessor :board, :origin, :destination, :own_pieces
+  attr_accessor :board, :origin, :destination, :own_pieces, :turn_count, :opponent_pieces
 
-  def initialize(origin, destination, board, own_pieces)
+  def initialize(origin, destination, board, own_pieces, opponent_pieces, turn_count)
     @origin = origin
     @destination = destination
     @board = board
     @own_pieces = own_pieces
+    @turn_count = turn_count
+    @opponent_pieces = opponent_pieces
   end
 
   def compute
@@ -33,7 +35,9 @@ class MovePawn
     return unless board.board[@start].piece.piece == @own_pieces[5]
     return puts "Can't move selected piece there." unless valid_move?
     return move_piece_vertically_if_no_blocking_pieces if valid_move? && vertical_move?
+    return enpassant if enpassant_conditions?
     return move_piece_diagonally_if_no_blocking_pieces if valid_move? && diagonal_move?
+    #puts turn_count
   end
 
   private
@@ -43,14 +47,45 @@ class MovePawn
     end
     @board.board[@final].piece = board.board[@start].piece
     @board.board[@start].piece = " "
+    @board.board[@final].piece.move_count += 1
+    @board.board[@final].piece.time_first_move = @turn_count if @board.board[@final].piece.time_first_move == 0
   end
 
   def move_piece_diagonally_if_no_blocking_pieces
     if destination_occupied_by_opponent_piece?
       @board.board[@final].piece = board.board[@start].piece
       @board.board[@start].piece = " "
+      @board.board[@final].piece.time_first_move = turn_count if @board.board[@final].piece.time_first_move == 0
+      @board.board[@final].piece.move_count += 1
     else
       return puts "Can't move selected piece there."
+    end
+  end
+
+  def enpassant
+    @board.board[@final].piece = board.board[@start].piece
+    @board.board[@final - 8].piece = " " if @final > @start
+    @board.board[@final + 8].piece = " " if @start > @final
+    @board.board[@start].piece = " "
+  end
+
+  def enpassant_conditions?
+    enpassant_up? || enpassant_down?
+  end
+
+  def enpassant_up?
+    @final > @start && @board.board[@final - 8].piece != " " && @board.board[@final - 8].piece.piece == opponent_pieces[5] && next_move?
+  end
+
+  def enpassant_down?
+    @start > @final && @board.board[@final + 8].piece != " " && @board.board[@final + 8].piece.piece == opponent_pieces[5] && next_move?
+  end
+
+  def next_move?
+    if @final > @start
+      turn_count == board.board[@final - 8].piece.time_first_move + 1
+    elsif @start > @final
+      turn_count == board.board[@final + 8].piece.time_first_move + 1
     end
   end
 
@@ -73,6 +108,7 @@ class MovePawn
   def destination_occupied_by_own_piece?
     @board.board[@final].piece != " " && own_pieces.include?(board.board[@final].piece.piece)
   end
+
 
   def destination_occupied_by_opponent_piece?
     @board.board[@final].piece != " " && !own_pieces.include?(board.board[@final].piece.piece)

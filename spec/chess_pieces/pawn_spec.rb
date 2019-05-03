@@ -4,8 +4,8 @@ require 'generate_moves'
 
 describe Pawn do
   include GenerateMoves
-  let(:white_pawn) { Pawn.new("\u2659".encode('utf-8')) }
-  let(:black_pawn) { Pawn.new("\u265F".encode('utf-8')) }
+  let(:white_pawn) { Pawn.new("\u2659".encode('utf-8'), 1) }
+  let(:black_pawn) { Pawn.new("\u265F".encode('utf-8'), 1) }
 
 
   def white_possible_moves(n)

@@ -8,22 +8,23 @@ class Player
   include ChessPieces
   include Coordinates
 
-  attr_reader :color, :pieces
+  attr_reader :color, :pieces, :opponent_pieces
 
-  def initialize(color, pieces)
+  def initialize(color, pieces, opponent_pieces)
     @color = color
     @pieces = pieces
+    @opponent_pieces = opponent_pieces
   end
 
   
-  def move_piece(origin, destination, board, pieces)
+  def move_piece(origin, destination, board, pieces, opponent_pieces, turn_count)
     return puts "There is no chess piece on this tile." if board.board[convert_coordinates_to_num(origin)].piece == " "
     MoveRook.new(origin, destination, board, pieces).compute #if board.board[convert_coordinates_to_num(origin)].piece == rook?
     MoveKnight.new(origin, destination, board, pieces).compute #if board.board[convert_coordinates_to_num(origin)].piece == knight?
     MoveBishop.new(origin, destination, board, pieces).compute
     MoveQueen.new(origin, destination, board, pieces).compute
     MoveKing.new(origin, destination, board, pieces).compute
-    MovePawn.new(origin, destination, board, pieces).compute
+    MovePawn.new(origin, destination, board, pieces, opponent_pieces, turn_count).compute
   end
 
   private
