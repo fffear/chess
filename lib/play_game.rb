@@ -93,26 +93,26 @@ class Chess
 
   private
   def generate_white_pieces
-    (0..15).each do |n|
-      @board.board[n].piece = Rook.new(WHITE_PIECES[0]) if n.zero? || n == 7
-      @board.board[n].piece = Knight.new(WHITE_PIECES[1]) if n == 1 || n == 6
-      @board.board[n].piece = Bishop.new(WHITE_PIECES[2]) if n == 2 || n == 5
-      @board.board[n].piece = Queen.new(WHITE_PIECES[3]) if n == 3
-      @board.board[n].piece = King.new(WHITE_PIECES[4]) if n == 4
-      @board.board[n].piece = Pawn.new(WHITE_PIECES[5], convert_coordinates_to_num(@board.board[n].coordinates[0] + @board.board[n].coordinates[1].to_s)) if n >= 8 #n >= 8 || n == 35
+    (0..55).each do |n|
+      #@board.board[n].piece = Rook.new(WHITE_PIECES[0]) if n.zero? || n == 7
+      #@board.board[n].piece = Knight.new(WHITE_PIECES[1]) if n == 1 || n == 6
+      #@board.board[n].piece = Bishop.new(WHITE_PIECES[2]) if n == 2 || n == 5
+      #@board.board[n].piece = Queen.new(WHITE_PIECES[3]) if n == 3
+      #@board.board[n].piece = King.new(WHITE_PIECES[4]) if n == 4
+      #@board.board[n].piece = Pawn.new(WHITE_PIECES[5], convert_coordinates_to_num(@board.board[n].coordinates[0] + @board.board[n].coordinates[1].to_s)) if n == 50 #n >= 8 || n == 35
       #@board.board[n].piece = Pawn.new(WHITE_PIECES[5]) if n == 25
       #@board.board[n].piece = Knight.new(WHITE_PIECES[1]) if n == 34
     end
   end
 
   def generate_black_pieces
-    (48..63).each do |n|
+    (0..63).each do |n|
       @board.board[n].piece = Rook.new(BLACK_PIECES[0]) if n == 63 || n == 56
       @board.board[n].piece = Knight.new(BLACK_PIECES[1]) if n == 62 || n == 57
       @board.board[n].piece = Bishop.new(BLACK_PIECES[2]) if n == 61 || n == 58
       @board.board[n].piece = Queen.new(BLACK_PIECES[3]) if n == 59
       @board.board[n].piece = King.new(BLACK_PIECES[4]) if n == 60
-      @board.board[n].piece = Pawn.new(BLACK_PIECES[5], convert_coordinates_to_num(@board.board[n].coordinates[0] + @board.board[n].coordinates[1].to_s)) if n <= 55
+      @board.board[n].piece = Pawn.new(BLACK_PIECES[5], convert_coordinates_to_num(@board.board[n].coordinates[0] + @board.board[n].coordinates[1].to_s)) if n == 12
     end
   end
 end

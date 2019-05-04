@@ -49,6 +49,7 @@ class MovePawn
     @board.board[@start].piece = " "
     @board.board[@final].piece.move_count += 1
     @board.board[@final].piece.time_first_move = @turn_count if @board.board[@final].piece.time_first_move == 0
+    select_promotion if promotion_conditions_met?
   end
 
   def move_piece_diagonally_if_no_blocking_pieces
@@ -60,6 +61,7 @@ class MovePawn
     else
       return puts "Can't move selected piece there."
     end
+    select_promotion if promotion_conditions_met?
   end
 
   def enpassant
@@ -89,6 +91,32 @@ class MovePawn
     end
   end
 
+  def select_promotion
+    promotion = ensure_valid_promotion_selected
+    promotion_options(promotion)
+  end
+
+  def ensure_valid_promotion_selected
+    loop do
+      puts "Please choose what to promote pawn to."
+      puts "1: Rook\n2: Knight\n3: Bishop\n4: Queen"
+      promotion = gets.chomp
+      return promotion if promotion =~ /^[1234]$/
+      puts "Invalid response, please select again" if promotion =~ /.|../
+    end
+  end
+
+  def promotion_options(promotion)
+    @board.board[@final].piece = Rook.new(own_pieces[0]) if promotion.to_i == 1
+    @board.board[@final].piece = Knight.new(own_pieces[1]) if promotion.to_i == 2
+    @board.board[@final].piece = Bishop.new(own_pieces[2]) if promotion.to_i == 3
+    @board.board[@final].piece = Queen.new(own_pieces[3]) if promotion.to_i == 4
+  end
+
+  def promotion_conditions_met?
+    @final >= 56 || @final <= 7
+  end
+
   def path_blocked_vertically?(shift_factor)
     blocked_upwards?(shift_factor) || blocked_downwards?(shift_factor)
   end
@@ -108,7 +136,6 @@ class MovePawn
   def destination_occupied_by_own_piece?
     @board.board[@final].piece != " " && own_pieces.include?(board.board[@final].piece.piece)
   end
-
 
   def destination_occupied_by_opponent_piece?
     @board.board[@final].piece != " " && !own_pieces.include?(board.board[@final].piece.piece)
