@@ -42,9 +42,7 @@ describe MoveQueen do
     tile_num = generate_start_and_finish_tile_num(n, l, shift_factor_n, shift_factor_l)
     input_queen(tile_num[:start], queen_piece)
     set_origin_and_destination_coordinates(n, l, shift_factor_n, shift_factor_l, queen_piece)
-    #chess.board.print_board
     yield(tile_num[:start], tile_num[:finish], queen_piece)
-    #chess.board.print_board
   end
 
   def test_with_blocking_pieces(n, l, shift_factor_n, shift_factor_l, shift_blocking_piece, queen_piece, knight_piece, &block)
@@ -53,9 +51,7 @@ describe MoveQueen do
     input_queen(tile_num[:start], queen_piece)
     generate_blocking_piece(tile_num[:finish], shift_blocking_piece, knight_piece)
     set_origin_and_destination_coordinates(n, l, shift_factor_n, shift_factor_l, queen_piece)
-    chess.board.print_board
     yield(tile_num[:start], tile_num[:finish], queen_piece)
-    chess.board.print_board
   end
 
   def change_in_origin_and_destination

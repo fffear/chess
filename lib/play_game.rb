@@ -2,6 +2,9 @@ $: << "#{File.expand_path('../chessboard', __FILE__)}"
 $: << "#{File.expand_path('../chess_pieces', __FILE__)}"
 $: << "#{File.expand_path('../move_pieces', __FILE__)}"
 $: << "#{File.expand_path('../player', __FILE__)}"
+$: << "#{File.expand_path('../modules', __FILE__)}"
+$: << "#{File.expand_path('../check_checkmate', __FILE__)}"
+
 
 require 'chessboard'
 require 'rook'
@@ -18,10 +21,14 @@ require 'move_bishop'
 require 'move_queen'
 require 'move_king'
 require 'move_pawn'
+require 'coordinates'
+require 'check'
 
 class Chess
   include ChessPieces
-  attr_accessor :board, :player_1, :player_2, :turn_count
+  include Coordinates
+  attr_accessor :board, :player_1, :player_2, :turn_count, :white_king_position, :black_king_position, :white_pieces_location,
+                :black_pieces_location, :board_before_move, :origin, :destination
 
   def initialize
     @board = Chessboard.new
@@ -30,47 +37,81 @@ class Chess
     @turn_count = 0
   end
 
+  def snapshot_before_move
+    @board_before_move = @board
+  end
+
+  def reverse_move
+    @board = @board_before_move
+  end
+
   def generate_starting_board
     generate_white_pieces
     generate_black_pieces
   end
 
-  def convert_coordinates_to_num(coordinates)
-    letters = ["a", "b", "c", "d", "e", "f", "g", "h"]
-    (coordinates[1].to_i - 1) * 8 + letters.index(coordinates[0])
+  def ensure_valid_origin
+    puts "Please enter the coordinates of the piece you would like to move"
+    @origin = gets.chomp
+    puts "You have entered an invalid coordinate. Please try again." unless valid_coordinate?(@origin)
+  end
+
+  def ensure_valid_destination
+    puts "Please enter the coordinates on the board you would like to move the selected piece to"
+    @destination = gets.chomp
+    puts "You have entered an invalid coordinate. Please try again." unless valid_coordinate?(@destination)
+  end
+
+  def ensure_valid_origin_and_destination
+    ensure_valid_origin until !@origin.nil? && valid_coordinate?(@origin)
+    ensure_valid_destination until !@destination.nil? && valid_coordinate?(@destination)
+  end
+
+  def reset_origin_and_destination
+    @origin = nil
+    @destination = nil
   end
 
   def valid_coordinate?(coordinate)
-    letters = ["a", "b", "c", "d", "e", "f", "g", "h"]
-    return false unless letters.one? { |l| l == coordinate[0] } && (1..8).include?(coordinate[1].to_i)
+    return false unless LETTERS.one? { |l| l == coordinate[0] } && (1..8).include?(coordinate[1].to_i)
     return false if coordinate.length > 2
-    if letters.one? { |l| l == coordinate[0] } && (1..8).include?(coordinate[1].to_i)
-      true
-    end
+    true if LETTERS.one? { |l| l == coordinate[0] } && (1..8).include?(coordinate[1].to_i)
   end
 
   def take_turns
     loop do
-      puts "Please enter the coordinates of the piece you would like to move"
-      origin = gets.chomp
-      puts "Please enter the coordinates on the board you would like to move the selected piece to"
-      destination = gets.chomp
+      @board_before_move = Marshal::dump(@board)
+      loop do
+        reset_origin_and_destination
+        @board = Marshal::load(@board_before_move)
+        board.print_board
+        ensure_valid_origin_and_destination
+        move_piece(@origin, @destination, 1)
+        redo if @board.board[convert_coordinates_to_num(@destination)].piece == " "
+        break unless king_in_check?(board, "white", BLACK_PIECES)
+        puts "You can't move into Check." if king_in_check?(board, "white", BLACK_PIECES)
+      end
       @turn_count += 1
-      move_piece(origin, destination, 1)
       board.print_board
-      #puts "Time first move: #{board.board[27].piece.original_position}"
+      puts "Black King in Check." if king_in_check?(board, "black", WHITE_PIECES)
+      
       break if @turn_count == 10
 
-      puts "Please enter the coordinates of the piece you would like to move"
-      origin = gets.chomp
-      puts "Please enter the coordinates on the board you would like to move the selected piece to"
-      destination = gets.chomp
+      @board_before_move = Marshal::dump(@board)
+      loop do
+        reset_origin_and_destination
+        @board = Marshal::load(@board_before_move)
+        board.print_board
+        ensure_valid_origin_and_destination
+        move_piece(@origin, @destination, 2)
+        redo if @board.board[convert_coordinates_to_num(@destination)].piece == " "
+        break unless king_in_check?(board, "black", WHITE_PIECES)
+        puts "You can't move into Check." if king_in_check?(board, "black", WHITE_PIECES)
+      end
       @turn_count += 1
-      move_piece(origin, destination, 2)
       board.print_board
+      puts "White King in Check." if king_in_check?(board, "white", BLACK_PIECES)
 
-
-      #puts turn_count
       break if @turn_count == 10
     end
   end
@@ -83,22 +124,19 @@ class Chess
     end
   end
 
-  def vertical_move?(start, final)
-    (final > start && final - start >= 8) || (final < start && start - final >= 8)
-  end
-
-  def horizontal_move?(start, final)
-    (final > start && final - start <= 7) || (final < start && start - final <= 7)
-  end
-
   private
+  def king_in_check?(board, color_of_own_piece, opponent_pieces)
+    Check.new(board, color_of_own_piece, opponent_pieces).compute
+  end
+
   def generate_white_pieces
     (0..55).each do |n|
-      #@board.board[n].piece = Rook.new(WHITE_PIECES[0]) if n.zero? || n == 7
+      @board.board[n].piece = Rook.new(WHITE_PIECES[0]) if n.zero? || n == 7
       #@board.board[n].piece = Knight.new(WHITE_PIECES[1]) if n == 1 || n == 6
       #@board.board[n].piece = Bishop.new(WHITE_PIECES[2]) if n == 2 || n == 5
-      #@board.board[n].piece = Queen.new(WHITE_PIECES[3]) if n == 3
-      #@board.board[n].piece = King.new(WHITE_PIECES[4]) if n == 4
+      @board.board[n].piece = Queen.new(WHITE_PIECES[3]) if n == 3
+      @board.board[n].piece = King.new(WHITE_PIECES[4]) if n == 4
+      #@board.board[n].piece = Pawn.new(WHITE_PIECES[5], n) if n == 9
       #@board.board[n].piece = Pawn.new(WHITE_PIECES[5], convert_coordinates_to_num(@board.board[n].coordinates[0] + @board.board[n].coordinates[1].to_s)) if n == 50 #n >= 8 || n == 35
       #@board.board[n].piece = Pawn.new(WHITE_PIECES[5]) if n == 25
       #@board.board[n].piece = Knight.new(WHITE_PIECES[1]) if n == 34
@@ -108,11 +146,11 @@ class Chess
   def generate_black_pieces
     (0..63).each do |n|
       @board.board[n].piece = Rook.new(BLACK_PIECES[0]) if n == 63 || n == 56
-      @board.board[n].piece = Knight.new(BLACK_PIECES[1]) if n == 62 || n == 57
-      @board.board[n].piece = Bishop.new(BLACK_PIECES[2]) if n == 61 || n == 58
-      @board.board[n].piece = Queen.new(BLACK_PIECES[3]) if n == 59
+      #@board.board[n].piece = Knight.new(BLACK_PIECES[1]) if n == 62 || n == 57
+      #@board.board[n].piece = Bishop.new(BLACK_PIECES[2]) if n == 61 || n == 58
+      #@board.board[n].piece = Queen.new(BLACK_PIECES[3]) if n == 59
       @board.board[n].piece = King.new(BLACK_PIECES[4]) if n == 60
-      @board.board[n].piece = Pawn.new(BLACK_PIECES[5], convert_coordinates_to_num(@board.board[n].coordinates[0] + @board.board[n].coordinates[1].to_s)) if n == 12
+      #@board.board[n].piece = Pawn.new(BLACK_PIECES[5], convert_coordinates_to_num(@board.board[n].coordinates[0] + @board.board[n].coordinates[1].to_s)) if n == 28
     end
   end
 end
@@ -121,14 +159,16 @@ end
 #board = Chessboard.new
 #p board.chessboard[0].piece = Rook.new("\u265C".encode('utf-8'))
 
-#chess = Chess.new
-#chess.generate_starting_board
+chess = Chess.new
+chess.generate_starting_board
+chess.board.print_board
+
 #chess.board.print_board
 
 #p chess.board.board[8].piece.move_count
 #p chess.board.chessboard[0].piece #.starting_positions #[0].coordinates
 
-#chess.take_turns
+chess.take_turns
 
 #p chess.board.board[35].piece.move_count
 #p chess.board.board[8].piece.move_count

@@ -51,9 +51,7 @@ describe MoveRook do
     input_rook(tile_num[:start], rook_piece)
     generate_blocking_piece(tile_num[:finish], shift_blocking_piece, knight_piece)
     set_origin_and_destination_coordinates(n, l, shift_factor_n, shift_factor_l, rook_piece)
-    #chess.board.print_board
     yield(tile_num[:start], tile_num[:finish], rook_piece)
-    #chess.board.print_board
   end
 
   def change_in_origin_and_destination

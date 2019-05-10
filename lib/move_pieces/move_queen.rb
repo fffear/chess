@@ -31,7 +31,7 @@ class MoveQueen
     @start = convert_coordinates_to_num(@origin)
     @final = convert_coordinates_to_num(@destination)
     return unless board.board[@start].piece.piece == @own_pieces[3]
-    return puts "Can't move selected piece there." unless valid_move?
+    return puts "Can't move selected piece there why is this happening?." unless valid_move?
     return move_piece_if_no_blocking_pieces(8) if valid_move? && vertical_move?
     return move_piece_if_no_blocking_pieces(1) if valid_move? && horizontal_move?
     return move_piece_if_no_blocking_pieces(9) if valid_move? && diagonal_bot_left_to_top_right_move?
@@ -41,13 +41,13 @@ class MoveQueen
   private
   def move_piece_if_no_blocking_pieces(shift_factor)
     return puts "You can't move opponent's pieces." unless own_piece?
-    return puts "Can't move selected piece there." if path_blocked?(shift_factor) || destination_occupied_by_own_piece?
+    return puts "Can't move selected piece there test." if path_blocked?(shift_factor) || destination_occupied_by_own_piece?
     @board.board[@final].piece = board.board[@start].piece
     @board.board[@start].piece = " "
   end
 
   def path_blocked?(shift_factor)
-    blocked_upwards_and_to_the_right?(shift_factor) || blocked_downwards_and_to_the_left?(shift_factor)
+   blocked_upwards_and_to_the_right?(shift_factor) || blocked_downwards_and_to_the_left?(shift_factor)
   end
 
   def own_piece?
@@ -76,17 +76,17 @@ class MoveQueen
   end
 
   def horizontal_move?
-    (@final > @start && (1..7).one? { |n| @final == @start + n }) ||
-    (@start > @final && [-1, -2, -3, -4, -5, -6, -7].one? { |n| @final == @start + n })
+    (@final / 8 == @start / 8 && @final > @start && [1, 2, 3, 4, 5, 6, 7].one? { |n| @final == @start + n }) ||
+    (@final / 8 == @start / 8 && @start > @final && [-1, -2, -3, -4, -5, -6, -7].one? { |n| @final == @start + n })
   end
 
   def diagonal_bot_left_to_top_right_move?
-    (@final > @start && [9, 18, 27, 36, 45, 54, 63].one? { |n| @final == @start + n }) ||
-    (@start > @final && [-9, -18, -27, -36, -45, -54, -63].one? { |n| @final == @start + n })
+    (@final / 8 != @start / 8 && @final > @start && [9, 18, 27, 36, 45, 54, 63].one? { |n| @final == @start + n }) ||
+    (@final / 8 != @start / 8 && @start > @final && [-9, -18, -27, -36, -45, -54, -63].one? { |n| @final == @start + n })
   end
 
   def diagonal_bot_right_to_top_left__move?
-    (@final > @start && [7, 14, 21, 28, 35, 42, 49].one? { |n| @final == @start + n }) ||
-    (@start > @final && [-7, -14, -21, -28, -35, -42, -49].one? { |n| @final == @start + n })
+    (@final / 8 != @start / 8 && @final > @start && [7, 14, 21, 28, 35, 42, 49].one? { |n| @final == @start + n }) ||
+    (@final / 8 != @start / 8 && @start > @final && [-7, -14, -21, -28, -35, -42, -49].one? { |n| @final == @start + n })
   end
 end

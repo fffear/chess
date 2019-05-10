@@ -9,12 +9,13 @@ require 'chessboard'
 
 class King
   attr_reader :piece, :starting_positions, :original_position
-  attr_accessor :move_count
+  attr_accessor :move_count, :time_first_move
 
   def initialize(piece)
     @piece = piece
     @starting_positions = Chessboard.new.board
     @move_count = 0
+    @time_first_move = 0
     generate_moves
   end
 
@@ -58,5 +59,5 @@ class King
   end
 end
 
-#king = King.new("\u2654".encode('utf-8'))
-#p king.all_possible_moves
+king = King.new("\u2654".encode('utf-8'))
+p king.all_possible_moves[0].possible_moves

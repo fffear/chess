@@ -9,12 +9,14 @@ require 'generate_moves'
 
 class Rook
   attr_reader :piece, :starting_positions
+  attr_accessor :time_first_move
 
   include GenerateMoves
 
   def initialize(piece)
     @piece = piece
     @starting_positions = Chessboard.new.board
+    @time_first_move = 0
     generate_all_moves(starting_positions)
   end
 
