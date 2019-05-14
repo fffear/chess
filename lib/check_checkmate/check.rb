@@ -12,7 +12,7 @@ class Check
   include Coordinates
   include PossibleMoves
   include ChessPieces
-  include GenerateMoves
+  #include GenerateMoves
 
   def initialize(board, color_of_own_piece, color_of_opponent_piece)
     @board = board

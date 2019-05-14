@@ -50,8 +50,8 @@ class MoveKing
   end
 
   def castling_conditions_met?
-    (@final < @start && board.board[@final - 2].piece != " " && (@final - 1..@start - 1).all? { |n| board.board[n].piece == " " } && rook_unmoved?(-2) && king_unmoved?) ||
-    (@final > @start && (@start + 1..@final).none? { |n| board.board[n].piece != " " } && rook_unmoved?(1) && king_unmoved?)
+    (@start - @final == 2 && board.board[@final - 2].piece != " " && (@final - 1..@start - 1).all? { |n| board.board[n].piece == " " } && rook_unmoved?(-2) && king_unmoved?) ||
+    (@final - @start == 2 && board.board[@final + 1].piece != " " && (@start + 1..@final).all? { |n| board.board[n].piece == " " } && rook_unmoved?(1) && king_unmoved?)
   end
 
   def king_in_check?(board, color_of_own_piece, opponent_pieces)

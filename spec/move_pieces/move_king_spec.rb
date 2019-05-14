@@ -42,7 +42,9 @@ describe MoveKing do
     tile_num = generate_start_and_finish_tile_num(n, l, shift_factor_n, shift_factor_l)
     input_king(tile_num[:start], king_piece)
     set_origin_and_destination_coordinates(n, l, shift_factor_n, shift_factor_l, king_piece)
+    chess.board.print_board
     yield(tile_num[:start], tile_num[:finish], king_piece)
+    chess.board.print_board
   end
 
   def test_with_blocking_pieces(n, l, shift_factor_n, shift_factor_l, shift_blocking_piece, king_piece, knight_piece, &block)
@@ -51,7 +53,9 @@ describe MoveKing do
     input_king(tile_num[:start], king_piece)
     generate_blocking_piece(tile_num[:finish], shift_blocking_piece, knight_piece)
     set_origin_and_destination_coordinates(n, l, shift_factor_n, shift_factor_l, king_piece)
+    chess.board.print_board
     yield(tile_num[:start], tile_num[:finish], king_piece)
+    chess.board.print_board
   end
 
   def change_in_origin_and_destination
@@ -91,75 +95,75 @@ describe MoveKing do
           end
         end
 
-        context "moves #{(idx.zero?) ? 'white king' : 'black king'} #{1} spaces downwards" do
-          letters.each do |l|
-            numbers[1..numbers.length - 1].each do |n|
-              it "move from #{l}#{n} to #{l}#{n - 1}" do
-                test_without_blocking_pieces(n, l, -1, 0, king, &change_in_origin_and_destination)
-              end
-            end
-          end
-        end
-
-        context "moves #{(idx.zero?) ? 'white king' : 'black king'} #{1} spaces right" do
-          letters[0..letters.length - 2].each do |l|
-            numbers.each do |n|
-              it "move from #{l}#{n} to #{(l.ord + 1).chr}#{n}" do
-                test_without_blocking_pieces(n, l, 0, 1, king, &change_in_origin_and_destination)
-              end
-            end
-          end
-        end
-        
-        context "moves #{(idx.zero?) ? 'white king' : 'black king'} #{1} spaces left" do
-          letters[1..letters.length - 1].each do |l|
-            numbers.each do |n|
-              it "move from #{l}#{n} to #{(l.ord - 1).chr}#{n}" do
-                test_without_blocking_pieces(n, l, 0, -1, king, &change_in_origin_and_destination)
-              end
-            end
-          end
-        end
-
-        context "moves #{(idx.zero?) ? 'white king' : 'black king'} #{1} spaces diagonally up right" do
-          letters[0..letters.length - 2].each do |l|
-            numbers[0..letters.length - 2].each do |n|
-              it "move from #{l}#{n} to #{(l.ord + 1).chr}#{n + 1}" do
-                test_without_blocking_pieces(n, l, 1, 1, king, &change_in_origin_and_destination)
-              end
-            end
-          end
-        end
-
-        context "moves #{(idx.zero?) ? 'white king' : 'black king'} #{1} spaces diagonally up left" do
-          letters[1..letters.length - 1].each do |l|
-            numbers[0..letters.length - 2].each do |n|
-              it "move from #{l}#{n} to #{(l.ord - 1).chr}#{n + 1}" do
-                test_without_blocking_pieces(n, l, 1, -1, king, &change_in_origin_and_destination)
-              end
-            end
-          end
-        end
-
-        context "moves #{(idx.zero?) ? 'white king' : 'black king'} #{1} spaces diagonally down right" do
-          letters[0..letters.length - 2].each do |l|
-            numbers[1..letters.length - 1].each do |n|
-              it "move from #{l}#{n} to #{(l.ord + 1).chr}#{n - 1}" do
-                test_without_blocking_pieces(n, l, -1, 1, king, &change_in_origin_and_destination)
-              end
-            end
-          end
-        end
-
-        context "moves #{(idx.zero?) ? 'white king' : 'black king'} #{1} spaces diagonally down left" do
-          letters[1..letters.length - 1].each do |l|
-            numbers[1..letters.length - 1].each do |n|
-              it "move from #{l}#{n} to #{(l.ord - 1).chr}#{n - 1}" do
-                test_without_blocking_pieces(n, l, -1, -1, king, &change_in_origin_and_destination)
-              end
-            end
-          end
-        end 
+        #context "moves #{(idx.zero?) ? 'white king' : 'black king'} #{1} spaces downwards" do
+        #  letters.each do |l|
+        #    numbers[1..numbers.length - 1].each do |n|
+        #      it "move from #{l}#{n} to #{l}#{n - 1}" do
+        #        test_without_blocking_pieces(n, l, -1, 0, king, &change_in_origin_and_destination)
+        #      end
+        #    end
+        #  end
+        #end
+#
+        #context "moves #{(idx.zero?) ? 'white king' : 'black king'} #{1} spaces right" do
+        #  letters[0..letters.length - 2].each do |l|
+        #    numbers.each do |n|
+        #      it "move from #{l}#{n} to #{(l.ord + 1).chr}#{n}" do
+        #        test_without_blocking_pieces(n, l, 0, 1, king, &change_in_origin_and_destination)
+        #      end
+        #    end
+        #  end
+        #end
+        #
+        #context "moves #{(idx.zero?) ? 'white king' : 'black king'} #{1} spaces left" do
+        #  letters[1..letters.length - 1].each do |l|
+        #    numbers.each do |n|
+        #      it "move from #{l}#{n} to #{(l.ord - 1).chr}#{n}" do
+        #        test_without_blocking_pieces(n, l, 0, -1, king, &change_in_origin_and_destination)
+        #      end
+        #    end
+        #  end
+        #end
+#
+        #context "moves #{(idx.zero?) ? 'white king' : 'black king'} #{1} spaces diagonally up right" do
+        #  letters[0..letters.length - 2].each do |l|
+        #    numbers[0..letters.length - 2].each do |n|
+        #      it "move from #{l}#{n} to #{(l.ord + 1).chr}#{n + 1}" do
+        #        test_without_blocking_pieces(n, l, 1, 1, king, &change_in_origin_and_destination)
+        #      end
+        #    end
+        #  end
+        #end
+#
+        #context "moves #{(idx.zero?) ? 'white king' : 'black king'} #{1} spaces diagonally up left" do
+        #  letters[1..letters.length - 1].each do |l|
+        #    numbers[0..letters.length - 2].each do |n|
+        #      it "move from #{l}#{n} to #{(l.ord - 1).chr}#{n + 1}" do
+        #        test_without_blocking_pieces(n, l, 1, -1, king, &change_in_origin_and_destination)
+        #      end
+        #    end
+        #  end
+        #end
+#
+        #context "moves #{(idx.zero?) ? 'white king' : 'black king'} #{1} spaces diagonally down right" do
+        #  letters[0..letters.length - 2].each do |l|
+        #    numbers[1..letters.length - 1].each do |n|
+        #      it "move from #{l}#{n} to #{(l.ord + 1).chr}#{n - 1}" do
+        #        test_without_blocking_pieces(n, l, -1, 1, king, &change_in_origin_and_destination)
+        #      end
+        #    end
+        #  end
+        #end
+#
+        #context "moves #{(idx.zero?) ? 'white king' : 'black king'} #{1} spaces diagonally down left" do
+        #  letters[1..letters.length - 1].each do |l|
+        #    numbers[1..letters.length - 1].each do |n|
+        #      it "move from #{l}#{n} to #{(l.ord - 1).chr}#{n - 1}" do
+        #        test_without_blocking_pieces(n, l, -1, -1, king, &change_in_origin_and_destination)
+        #      end
+        #    end
+        #  end
+        #end 
       end
     end
 
