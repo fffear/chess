@@ -88,12 +88,12 @@ class Chess
         ensure_valid_origin_and_destination
         move_piece(@origin, @destination, 1)
         redo if @board.board[convert_coordinates_to_num(@destination)].piece == " "
-        break unless king_in_check?(board, "white", BLACK_PIECES)
-        puts "You can't move into Check." if king_in_check?(board, "white", BLACK_PIECES)
+        break unless king_in_check?(board, WHITE_PIECES)
+        puts "You can't move into Check." if king_in_check?(board, WHITE_PIECES)
       end
       @turn_count += 1
       board.print_board
-      puts "Black King in Check." if king_in_check?(board, "black", WHITE_PIECES)
+      puts "Black King in Check." if king_in_check?(board, BLACK_PIECES)
       
       break if @turn_count == 10
 
@@ -105,12 +105,12 @@ class Chess
         ensure_valid_origin_and_destination
         move_piece(@origin, @destination, 2)
         redo if @board.board[convert_coordinates_to_num(@destination)].piece == " "
-        break unless king_in_check?(board, "black", WHITE_PIECES)
-        puts "You can't move into Check." if king_in_check?(board, "black", WHITE_PIECES)
+        break unless king_in_check?(board, BLACK_PIECES)
+        puts "You can't move into Check." if king_in_check?(board, BLACK_PIECES)
       end
       @turn_count += 1
       board.print_board
-      puts "White King in Check." if king_in_check?(board, "white", BLACK_PIECES)
+      puts "White King in Check." if king_in_check?(board, WHITE_PIECES)
 
       break if @turn_count == 10
     end
@@ -125,8 +125,8 @@ class Chess
   end
 
   private
-  def king_in_check?(board, color_of_own_piece, opponent_pieces)
-    Check.new(board, color_of_own_piece, opponent_pieces).compute
+  def king_in_check?(board, color_of_own_piece)
+    Check.new(board, color_of_own_piece).compute
   end
 
   def generate_white_pieces
@@ -134,7 +134,7 @@ class Chess
       @board.board[n].piece = Rook.new(WHITE_PIECES[0]) if n.zero? || n == 7
       #@board.board[n].piece = Knight.new(WHITE_PIECES[1]) if n == 1 || n == 6
       #@board.board[n].piece = Bishop.new(WHITE_PIECES[2]) if n == 2 || n == 5
-      @board.board[n].piece = Queen.new(WHITE_PIECES[3]) if n == 3
+      #@board.board[n].piece = Queen.new(WHITE_PIECES[3]) if n == 3
       @board.board[n].piece = King.new(WHITE_PIECES[4]) if n == 4
       #@board.board[n].piece = Pawn.new(WHITE_PIECES[5], n) if n == 9
       #@board.board[n].piece = Pawn.new(WHITE_PIECES[5], convert_coordinates_to_num(@board.board[n].coordinates[0] + @board.board[n].coordinates[1].to_s)) if n == 50 #n >= 8 || n == 35
@@ -164,6 +164,8 @@ end
 #chess.board.print_board
 
 #chess.board.print_board
+
+#p chess.board.board[0].piece.starting_positions[0]#.possible_moves
 
 #p chess.board.board[8].piece.move_count
 #p chess.board.chessboard[0].piece #.starting_positions #[0].coordinates

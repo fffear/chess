@@ -14,11 +14,17 @@ class Check
   include ChessPieces
   #include GenerateMoves
 
-  def initialize(board, color_of_own_piece, color_of_opponent_piece)
+  def initialize(board, color_of_own_piece)
     @board = board
     @color_of_own_piece = color_of_own_piece
-    @color_of_opponent_piece = color_of_opponent_piece
+    determine_opponent_piece
+    #@color_of_opponent_piece = color_of_opponent_piece
+    #@own_piece = @color_of_opponent_piece
+  end
 
+  def determine_opponent_piece
+    @color_of_opponent_piece = WHITE_PIECES if @color_of_own_piece == BLACK_PIECES
+    @color_of_opponent_piece = BLACK_PIECES if @color_of_own_piece == WHITE_PIECES
   end
 
   def compute
@@ -42,7 +48,8 @@ class Check
   def find_king_position(color)
     board.board.each_with_index do |tile, idx|
       next if tile.piece == " "
-      if color == "white"
+      if color == WHITE_PIECES
+      #if color == "white"
         return @king_position = idx if tile.piece.piece == WHITE_PIECES[4]
       else
         return @king_position = idx if tile.piece.piece == BLACK_PIECES[4]
@@ -51,9 +58,9 @@ class Check
   end
 
   def opponent_rook_threatening_king?(tile, idx, shift_factor)
-    if tile.piece.piece == color_of_opponent_piece[0] && tile.piece.starting_positions[idx].possible_moves.include?(king_position + shift_factor)
-      return true if vertical_move?(idx, king_position + shift_factor) && !path_blocked?(8, idx, king_position + shift_factor)
-      return true if horizontal_move?(idx, king_position + shift_factor) && !path_blocked?(1, idx, king_position + shift_factor)
+    if tile.piece.piece == color_of_opponent_piece[0] && tile.piece.starting_positions[idx].possible_moves.include?(@king_position + shift_factor)
+      return true if vertical_move?(idx, @king_position + shift_factor) && !(path_blocked?(8, idx, @king_position + shift_factor))
+      return true if horizontal_move?(idx, @king_position + shift_factor) && !(path_blocked?(1, idx, @king_position + shift_factor))
     end
     false
   end

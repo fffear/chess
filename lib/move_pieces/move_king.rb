@@ -18,13 +18,14 @@ require 'check'
 class MoveKing
   include ChessPieces
   include Coordinates
-  attr_accessor :board, :origin, :destination, :own_pieces
+  attr_accessor :board, :origin, :destination, :own_pieces, :opponent_pieces
 
   def initialize(origin, destination, board, own_pieces)
     @origin = origin
     @destination = destination
     @board = board
     @own_pieces = own_pieces
+    determine_opponent_pieces
   end
 
   def compute
@@ -42,6 +43,11 @@ class MoveKing
   end
 
   private
+  def determine_opponent_pieces
+    @opponent_pieces = BLACK_PIECES if @own_pieces == WHITE_PIECES
+    @opponent_pieces = WHITE_PIECES if @own_pieces == BLACK_PIECES
+  end
+
   def move_piece_if_no_blocking_pieces(shift_factor)
     return puts "You can't move opponent's pieces." unless own_piece?
     return puts "Can't move selected piece there." if path_blocked?(shift_factor) || destination_occupied_by_own_piece?
@@ -54,16 +60,23 @@ class MoveKing
     (@final - @start == 2 && board.board[@final + 1].piece != " " && (@start + 1..@final).all? { |n| board.board[n].piece == " " } && rook_unmoved?(1) && king_unmoved?)
   end
 
-  def king_in_check?(board, color_of_own_piece, opponent_pieces)
-    Check.new(board, color_of_own_piece, opponent_pieces).compute
+  #def king_in_check?(board, color_of_own_piece, opponent_pieces)
+  #  Check.new(board, color_of_own_piece, opponent_pieces).compute
+  #end
+
+  def king_in_check?(board, color_of_own_piece)
+    Check.new(board, color_of_own_piece).compute
   end
 
-  def tile_adjacent_to_king_threatened?(board, color_of_own_piece, opponent_pieces, shift_factor)
-    Check.new(board, color_of_own_piece, opponent_pieces).castling_check?(shift_factor)
+  #def tile_adjacent_to_king_threatened?(board, color_of_own_piece, opponent_pieces, shift_factor)
+  #  Check.new(board, color_of_own_piece, opponent_pieces).castling_check?(shift_factor)
+  #end
+  def tile_adjacent_to_king_threatened?(board, color_of_own_piece, shift_factor)
+    Check.new(board, color_of_own_piece).castling_check?(shift_factor)
   end
 
   def castle_queenside
-    return puts "Can't castle through check." if tile_adjacent_to_king_threatened?(board, "white", BLACK_PIECES, -1) || tile_adjacent_to_king_threatened?(board, "black", WHITE_PIECES, -1)
+    return puts "Can't castle through check." if tile_adjacent_to_king_threatened?(board, @own_pieces, -1) || tile_adjacent_to_king_threatened?(board, @own_pieces, -2)# || tile_adjacent_to_king_threatened?(board, BLACK_PIECES, -1)
     return puts "There is no rook present to castle" if board.board[@final - 2].piece == " "
     @board.board[@final].piece = board.board[@start].piece
     @board.board[@start].piece = " "
@@ -72,7 +85,7 @@ class MoveKing
   end
 
   def castle_kingside
-    return puts "Can't castle through check." if tile_adjacent_to_king_threatened?(board, "white", BLACK_PIECES, 1) || tile_adjacent_to_king_threatened?(board, "black", WHITE_PIECES, 1)
+    return puts "Can't castle through check." if tile_adjacent_to_king_threatened?(board, @own_pieces, 1) || tile_adjacent_to_king_threatened?(board, @own_pieces, 2)# || tile_adjacent_to_king_threatened?(board, BLACK_PIECES, 1)
     return puts "There is no rook present to castle" if board.board[@final - 2].piece == " "
     @board.board[@final].piece = board.board[@start].piece
     @board.board[@start].piece = " "
@@ -81,7 +94,7 @@ class MoveKing
   end
 
   def castle_king
-    return puts "Can't castle, king is in check." if king_in_check?(board, "white", BLACK_PIECES) || king_in_check?(board, "black", WHITE_PIECES)
+    return puts "Can't castle, king is in check." if king_in_check?(board, @own_pieces) #|| king_in_check?(board, BLACK_PIECES, WHITE_PIECES)
     @final < @start ? castle_queenside : castle_kingside
   end
 

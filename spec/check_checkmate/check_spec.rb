@@ -12,8 +12,8 @@ describe Check do
   include Coordinates
   include ChessPieces
   let(:chess) { Chess.new }
-  let(:check_white) { Check.new(chess.board, "white", ChessPieces::BLACK_PIECES) }
-  let(:check_black) { Check.new(chess.board, "black", ChessPieces::WHITE_PIECES) }
+  let(:check_white) { Check.new(chess.board, ChessPieces::WHITE_PIECES) }
+  let(:check_black) { Check.new(chess.board, ChessPieces::BLACK_PIECES) }
 
   def input_king(tile_num, king_piece)
     chess.board.board[tile_num].piece = King.new(king_piece)
