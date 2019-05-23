@@ -41,6 +41,7 @@ class Check
       return true if opponent_bishop_threatening_king?(tile, idx, shift_factor)
       return true if opponent_queen_threatening_king?(tile, idx, shift_factor)
       return true if opponent_pawn_threatening_king?(tile, idx, shift_factor)
+      return true if opponent_king_threatening_king?(tile, idx, shift_factor)
     end
     false
   end
@@ -97,6 +98,16 @@ class Check
     false
   end
 
+  def opponent_king_threatening_king?(tile, idx, shift_factor)
+    if tile.piece.piece == color_of_opponent_piece[4] && tile.piece.starting_positions[idx].possible_moves.include?(king_position + shift_factor)
+      return true if vertical_move?(idx, king_position + shift_factor)
+      return true if horizontal_move?(idx, king_position + shift_factor)
+      return true if diagonal_bot_left_to_top_right_move?(idx, king_position + shift_factor)
+      return true if diagonal_bot_right_to_top_left_move?(idx, king_position + shift_factor)
+    end
+    false
+  end
+
   def king_in_check?(king_position)
     board.board.each_with_index do |tile, idx|
       next if tile.piece == " " || tile.piece == King
@@ -105,6 +116,7 @@ class Check
       return true if opponent_bishop_threatening_king?(tile, idx, 0)
       return true if opponent_queen_threatening_king?(tile, idx, 0)
       return true if opponent_pawn_threatening_king?(tile, idx, 0)
+      return true if opponent_king_threatening_king?(tile, idx, 0)
     end
     false
   end

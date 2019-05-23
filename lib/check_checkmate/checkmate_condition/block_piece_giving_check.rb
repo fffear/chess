@@ -42,7 +42,7 @@ class BlockPieceGivingCheck
   end
 
   def compute
-    p "This is test 4"
+    #p "This is test 4"
     @relevant_pieces = @color_of_opponent_piece.select(&select_rook_bishop_queen)
     return true unless threatening_pieces_are_rook_bishop_queen?
     @tile_num_of_threatening_piece.each do |n|

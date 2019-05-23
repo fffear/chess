@@ -39,17 +39,17 @@ class CheckMate
   end
 
   def impossible_to_move_out_of_check_by_moving_king?
-    p "This is test 2"
+    #p "This is test 2"
     move_king_out_of_check?
   end
 
   def impossible_to_take_piece_that_gives_check_to_remove_check?
-    p "This is test 3"
+    #p "This is test 3"
     TakePieceToRemoveCheck.new(@board, @tile_num_of_threatening_piece, @color_of_opponent_piece, @color_of_own_piece, @turn_count).compute
   end
 
   def remove_check_by_blocking_piece_giving_check?
-    p "This is test 4"
+    #p "This is test 4"
     BlockPieceGivingCheck.new(@board, @tile_num_of_threatening_piece, @king_position, @color_of_opponent_piece, @color_of_own_piece).compute
   end
   
@@ -119,7 +119,7 @@ class CheckMate
   end
 
   def currently_in_check?
-    p "This is a test 1"
+    #p "This is a test 1"
     Check.new(board, color_of_own_piece).compute
   end
 
@@ -139,7 +139,7 @@ class CheckMate
         move_king_out_of_check(tile)
         Check.new(@board_after_attempt_to_move_out_of_check, @color_of_own_piece).compute
       elsif color_of_own_piece.include?(board.board[tile].piece.piece)
-        true
+        false
       end
     end
   end
