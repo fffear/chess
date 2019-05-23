@@ -23,6 +23,7 @@ require 'move_king'
 require 'move_pawn'
 require 'coordinates'
 require 'check'
+require 'checkmate'
 
 class Chess
   include ChessPieces
@@ -93,6 +94,7 @@ class Chess
       end
       @turn_count += 1
       board.print_board
+      puts "Checkmate for Black player. Black player loses." if CheckMate.new(board, BLACK_PIECES, @turn_count).compute
       puts "Black King in Check." if king_in_check?(board, BLACK_PIECES)
       
       break if @turn_count == 10
@@ -110,6 +112,8 @@ class Chess
       end
       @turn_count += 1
       board.print_board
+      puts "Checkmate for White player. White player loses." if CheckMate.new(board, WHITE_PIECES, @turn_count).compute
+      #CheckMate.new(board, WHITE_PIECES).take_piece_that_gives_check_to_remove_check
       puts "White King in Check." if king_in_check?(board, WHITE_PIECES)
 
       break if @turn_count == 10
@@ -131,12 +135,12 @@ class Chess
 
   def generate_white_pieces
     (0..55).each do |n|
-      @board.board[n].piece = Rook.new(WHITE_PIECES[0]) if n.zero? || n == 7
-      #@board.board[n].piece = Knight.new(WHITE_PIECES[1]) if n == 1 || n == 6
-      #@board.board[n].piece = Bishop.new(WHITE_PIECES[2]) if n == 2 || n == 5
-      #@board.board[n].piece = Queen.new(WHITE_PIECES[3]) if n == 3
+      @board.board[n].piece = Rook.new(WHITE_PIECES[0]) if n == 5 || n == 3
+      #@board.board[n].piece = Knight.new(WHITE_PIECES[1]) if n == 3#n == 20 || n == 21 #|| n == 37
+      @board.board[n].piece = Bishop.new(WHITE_PIECES[2]) if n == 7
+      @board.board[n].piece = Queen.new(WHITE_PIECES[3]) if n == 7
       @board.board[n].piece = King.new(WHITE_PIECES[4]) if n == 4
-      #@board.board[n].piece = Pawn.new(WHITE_PIECES[5], n) if n == 9
+      @board.board[n].piece = Pawn.new(WHITE_PIECES[5], n) if n == 11 || n == 13
       #@board.board[n].piece = Pawn.new(WHITE_PIECES[5], convert_coordinates_to_num(@board.board[n].coordinates[0] + @board.board[n].coordinates[1].to_s)) if n == 50 #n >= 8 || n == 35
       #@board.board[n].piece = Pawn.new(WHITE_PIECES[5]) if n == 25
       #@board.board[n].piece = Knight.new(WHITE_PIECES[1]) if n == 34
@@ -145,12 +149,12 @@ class Chess
 
   def generate_black_pieces
     (0..63).each do |n|
-      @board.board[n].piece = Rook.new(BLACK_PIECES[0]) if n == 63 || n == 56
-      #@board.board[n].piece = Knight.new(BLACK_PIECES[1]) if n == 62 || n == 57
-      #@board.board[n].piece = Bishop.new(BLACK_PIECES[2]) if n == 61 || n == 58
-      #@board.board[n].piece = Queen.new(BLACK_PIECES[3]) if n == 59
+      @board.board[n].piece = Rook.new(BLACK_PIECES[0]) if n == 56
+      #@board.board[n].piece = Knight.new(BLACK_PIECES[1]) if n == 34 #n == 59 || n == 61
+      @board.board[n].piece = Bishop.new(BLACK_PIECES[2]) if n == 61 #n == 51 || n == 53
+      #@board.board[n].piece = Queen.new(BLACK_PIECES[3]) if n == 27
       @board.board[n].piece = King.new(BLACK_PIECES[4]) if n == 60
-      #@board.board[n].piece = Pawn.new(BLACK_PIECES[5], convert_coordinates_to_num(@board.board[n].coordinates[0] + @board.board[n].coordinates[1].to_s)) if n == 28
+      #@board.board[n].piece = Pawn.new(BLACK_PIECES[5], convert_coordinates_to_num(@board.board[n].coordinates[0] + @board.board[n].coordinates[1].to_s)) if n == 27
     end
   end
 end
@@ -159,9 +163,9 @@ end
 #board = Chessboard.new
 #p board.chessboard[0].piece = Rook.new("\u265C".encode('utf-8'))
 
-#chess = Chess.new
-#chess.generate_starting_board
-#chess.board.print_board
+chess = Chess.new
+chess.generate_starting_board
+chess.board.print_board
 
 #chess.board.print_board
 
@@ -170,7 +174,7 @@ end
 #p chess.board.board[8].piece.move_count
 #p chess.board.chessboard[0].piece #.starting_positions #[0].coordinates
 
-#chess.take_turns
+chess.take_turns
 
 #p chess.board.board[35].piece.move_count
 #p chess.board.board[8].piece.move_count

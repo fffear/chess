@@ -66,7 +66,7 @@ class Check
   end
 
   def opponent_knight_threatening_king?(tile, idx, shift_factor)
-    if tile.piece.piece == color_of_opponent_piece[1] && tile.piece.starting_positions[idx].possible_moves.include?(king_position + shift_factor)
+    if tile.piece.piece == color_of_opponent_piece[1] && tile.piece.starting_positions[idx].possible_moves.include?(@king_position + shift_factor)
       return true
     end
     false
