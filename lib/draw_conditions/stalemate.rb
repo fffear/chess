@@ -30,7 +30,7 @@ class Stalemate
   def player_in_check_if_any_piece_is_moved?
     @board.board.each_with_index do |tile, idx|
       next if tile.piece == " " || color_of_opponent_piece.include?(tile.piece.piece)
-      tile.piece.starting_positions[idx].possible_moves.all? do |n|
+      return true if tile.piece.starting_positions[idx].possible_moves.all? do |n|
         player_in_check_after_moving_piece?(idx, n) if piece_can_move_legally?(tile, idx, n)
       end || false
     end
@@ -88,14 +88,14 @@ class Stalemate
   def bishop_can_move_legally?(tile, idx, n)
     tile.piece.piece == color_of_own_piece[2] &&
     tile.piece.starting_positions[idx].possible_moves.include?(n) &&
-    bishop_path_not_blocked?(idx, bp) &&
+    bishop_path_not_blocked?(idx, n) &&
     (board.board[n].piece == " " || color_of_own_piece.include?(board.board[n].piece.piece))
   end
   
   def queen_can_move_legally?(tile, idx, n)
     tile.piece.piece == color_of_own_piece[3] &&
     tile.piece.starting_positions[idx].possible_moves.include?(n) &&
-    queen_path_not_blocked?(idx, bp) &&
+    queen_path_not_blocked?(idx, n) &&
     (board.board[n].piece == " " || color_of_own_piece.include?(board.board[n].piece.piece))
   end
 

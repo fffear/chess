@@ -167,9 +167,9 @@ end
 #board = Chessboard.new
 #p board.chessboard[0].piece = Rook.new("\u265C".encode('utf-8'))
 
-chess = Chess.new
-chess.generate_starting_board
-chess.board.print_board
+#chess = Chess.new
+#chess.generate_starting_board
+#chess.board.print_board
 
 #chess.board.print_board
 
@@ -178,7 +178,7 @@ chess.board.print_board
 #p chess.board.board[8].piece.move_count
 #p chess.board.chessboard[0].piece #.starting_positions #[0].coordinates
 
-chess.take_turns
+#chess.take_turns
 
 #p chess.board.board[35].piece.move_count
 #p chess.board.board[8].piece.move_count
