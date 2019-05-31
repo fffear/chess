@@ -16,13 +16,14 @@ require 'coordinates'
 class MoveRook
   include ChessPieces
   include Coordinates
-  attr_accessor :board, :origin, :destination, :own_pieces
+  attr_accessor :board, :origin, :destination, :own_pieces, :turn_count
 
-  def initialize(origin, destination, board, own_pieces)
+  def initialize(origin, destination, board, own_pieces, turn_count)
     @origin = origin
     @destination = destination
     @board = board
     @own_pieces = own_pieces
+    @turn_count = turn_count
   end
 
   def compute
@@ -41,6 +42,7 @@ class MoveRook
     return puts "Can't move selected piece there." if path_blocked?(shift_factor) || destination_occupied_by_own_piece?
     @board.board[@final].piece = board.board[@start].piece
     @board.board[@start].piece = " "
+    @board.board[@final].piece.time_first_move = @turn_count if (@board.board[@final].piece.time_first_move).zero?
   end
 
   def path_blocked?(shift_factor)

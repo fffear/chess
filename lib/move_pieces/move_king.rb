@@ -18,13 +18,14 @@ require 'check'
 class MoveKing
   include ChessPieces
   include Coordinates
-  attr_accessor :board, :origin, :destination, :own_pieces, :opponent_pieces
+  attr_accessor :board, :origin, :destination, :own_pieces, :opponent_pieces, :turn_count
 
-  def initialize(origin, destination, board, own_pieces)
+  def initialize(origin, destination, board, own_pieces, turn_count)
     @origin = origin
     @destination = destination
     @board = board
     @own_pieces = own_pieces
+    @turn_count = turn_count
     determine_opponent_pieces
   end
 
@@ -53,6 +54,7 @@ class MoveKing
     return puts "Can't move selected piece there." if path_blocked?(shift_factor) || destination_occupied_by_own_piece?
     @board.board[@final].piece = board.board[@start].piece
     @board.board[@start].piece = " "
+    @board.board[@final].piece.time_first_move = @turn_count if (@board.board[@final].piece.time_first_move).zero?
   end
 
   def castling_conditions_met?
@@ -71,6 +73,7 @@ class MoveKing
   #def tile_adjacent_to_king_threatened?(board, color_of_own_piece, opponent_pieces, shift_factor)
   #  Check.new(board, color_of_own_piece, opponent_pieces).castling_check?(shift_factor)
   #end
+
   def tile_adjacent_to_king_threatened?(board, color_of_own_piece, shift_factor)
     Check.new(board, color_of_own_piece).castling_check?(shift_factor)
   end
@@ -82,15 +85,23 @@ class MoveKing
     @board.board[@start].piece = " "
     @board.board[@final + 1].piece = board.board[@final - 2].piece
     @board.board[@final - 2].piece = " "
+    @board.board[@final].piece.time_first_move = @turn_count
+    @board.board[@final + 1].piece.time_first_move = @turn_count
+    p @board.board[@final].piece.time_first_move
+    p @board.board[@final + 1].piece.time_first_move
   end
 
   def castle_kingside
     return puts "Can't castle through check." if tile_adjacent_to_king_threatened?(board, @own_pieces, 1) || tile_adjacent_to_king_threatened?(board, @own_pieces, 2)# || tile_adjacent_to_king_threatened?(board, BLACK_PIECES, 1)
-    return puts "There is no rook present to castle" if board.board[@final - 2].piece == " "
+    return puts "There is no rook present to castle" if board.board[@final + 1].piece == " "
     @board.board[@final].piece = board.board[@start].piece
     @board.board[@start].piece = " "
     @board.board[@final - 1].piece = board.board[@final + 1].piece
     @board.board[@final + 1].piece = " "
+    @board.board[@final].piece.time_first_move = @turn_count
+    @board.board[@final - 1].piece.time_first_move = @turn_count
+    p @board.board[@final].piece.time_first_move
+    p @board.board[@final - 1].piece.time_first_move
   end
 
   def castle_king

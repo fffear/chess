@@ -26,18 +26,24 @@ require 'coordinates'
 require 'check'
 require 'checkmate'
 require 'stalemate'
+require 'threefold_repetition'
+
+# insufficient checkmate material (knight, bishop)
+# position move 3 times
+# 50 rule move
 
 class Chess
   include ChessPieces
   include Coordinates
   attr_accessor :board, :player_1, :player_2, :turn_count, :white_king_position, :black_king_position, :white_pieces_location,
-                :black_pieces_location, :board_before_move, :origin, :destination
+                :black_pieces_location, :board_before_move, :origin, :destination, :board_history
 
   def initialize
     @board = Chessboard.new
     @player_1 = Player.new("white", WHITE_PIECES, BLACK_PIECES)
     @player_2 = Player.new("black", BLACK_PIECES, WHITE_PIECES)
     @turn_count = 0
+    @board_history = []
   end
 
   def snapshot_before_move
@@ -82,6 +88,7 @@ class Chess
   end
 
   def take_turns
+    @board_history << Marshal::dump(@board)
     loop do
       @board_before_move = Marshal::dump(@board)
       loop do
@@ -96,9 +103,15 @@ class Chess
       end
       @turn_count += 1
       board.print_board
+      break if ThreefoldRepetition.new(@board, @board_history, @turn_count).compute && claim_threefold_repetition_draw?("Black player")
+      @board_history << Marshal::dump(@board)
       puts "Checkmate for Black player. Black player loses." if CheckMate.new(board, BLACK_PIECES, @turn_count).compute
       puts "Black King in Check." if king_in_check?(board, BLACK_PIECES)
       puts "It is a stalemate for black" if Stalemate.new(board, BLACK_PIECES, @turn_count).compute
+      resign_game("White player", "Black player")
+      propose_draw("White player", "Black player")
+      # propose draw
+      
       
       break if @turn_count == 10
 
@@ -115,12 +128,72 @@ class Chess
       end
       @turn_count += 1
       board.print_board
+      break if ThreefoldRepetition.new(@board, @board_history, @turn_count).compute && claim_threefold_repetition_draw?("White player")
+      @board_history << Marshal::dump(@board)
       puts "Checkmate for White player. White player loses." if CheckMate.new(board, WHITE_PIECES, @turn_count).compute
       #CheckMate.new(board, WHITE_PIECES).take_piece_that_gives_check_to_remove_check
       puts "White King in Check." if king_in_check?(board, WHITE_PIECES)
       puts "It is a stalemate" if Stalemate.new(board, WHITE_PIECES, @turn_count).compute
+      resign_game("Black player", "White player")
+      propose_draw("White player", "Black player")
+      # propose draw
+      break if @turn_count == 100
+    end
+  end
 
-      break if @turn_count == 10
+  def claim_threefold_repetition_draw?(player)
+    loop do
+      puts "The board has repeated 3 times. #{player}, do you want to claim a draw? (y/n)"
+      claim_draw_answer = gets.chomp
+      if ["yes", "y", "no", "n"].none? { |ans| claim_draw_answer == ans }
+        puts "Please enter a valid answer."
+        redo
+      end
+      puts "The game is a draw." if ["yes", "y"].one? { |ans| claim_draw_answer == ans }
+      return false if ["no", "n"].one? { |ans| claim_draw_answer == ans }
+      return true
+    end
+  end
+
+  def resign_game(player1, player2)
+    loop do
+      puts "#{player1}, do you want to resign? (y/n)"
+      resign_answer = gets.chomp
+      if ["yes", "y", "no", "n"].none? { |ans| resign_answer == ans }
+        puts "Please enter a valid answer."
+        redo
+      end
+      puts "#{player1} has resigned. #{player2} wins!" if ["yes", "y"].one? { |ans| resign_answer == ans }
+      break if ["no", "n"].one? { |ans| resign_answer == ans }
+      break
+    end
+  end
+
+  def propose_draw(player1, player2)
+    loop do
+      puts "#{player1}, do you want to propose a draw to you're opponent? (y/n)"
+      propose_draw_answer = gets.chomp
+      if ["yes", "y", "no", "n"].none? { |ans| propose_draw_answer == ans }
+        puts "Please enter a valid answer."
+        redo
+      end
+      accept_draw_proposal(player1, player2) if ["yes", "y"].one? { |ans| propose_draw_answer == ans }
+      break if ["no", "n"].one? { |ans| propose_draw_answer == ans }
+      break
+    end
+  end
+
+  def accept_draw_proposal(player1, player2)
+    loop do
+      puts "#{player1} has proposed a draw. #{player2}, do you accept the proposal?"
+      accept_draw_answer = gets.chomp
+      if ["yes", "y", "no", "n"].none? { |ans| accept_draw_answer == ans }
+        puts "Please enter a valid answer."
+        redo
+      end
+      puts "#{player2} has accepted your proposal to draw. The game is a draw." if ["yes", "y"].one? { |ans| accept_draw_answer == ans }
+      break if ["no", "n"].one? { |ans| accept_draw_answer == ans }
+      break
     end
   end
 
@@ -132,6 +205,10 @@ class Chess
     end
   end
 
+  def same_as?(game_board)
+    self.board.board 
+  end
+
   private
   def king_in_check?(board, color_of_own_piece)
     Check.new(board, color_of_own_piece).compute
@@ -139,26 +216,26 @@ class Chess
 
   def generate_white_pieces
     (0..55).each do |n|
-      #@board.board[n].piece = Rook.new(WHITE_PIECES[0]) if n == 6
+      @board.board[n].piece = Rook.new(WHITE_PIECES[0]) if n == 0 || n == 7
       #@board.board[n].piece = Knight.new(WHITE_PIECES[1]) if n == 46#n == 20 || n == 21 #|| n == 37
       #@board.board[n].piece = Bishop.new(WHITE_PIECES[2]) if n == 8
-      @board.board[n].piece = Queen.new(WHITE_PIECES[3]) if n == 8
-      @board.board[n].piece = King.new(WHITE_PIECES[4]) if n == 47
+      #@board.board[n].piece = Queen.new(WHITE_PIECES[3]) if n == 8
+      @board.board[n].piece = King.new(WHITE_PIECES[4]) if n == 4
       @board.board[n].piece = Pawn.new(WHITE_PIECES[5], n) if n == 45#n == 11 || n == 13
       #@board.board[n].piece = Pawn.new(WHITE_PIECES[5], convert_coordinates_to_num(@board.board[n].coordinates[0] + @board.board[n].coordinates[1].to_s)) if n == 50 #n >= 8 || n == 35
-      #@board.board[n].piece = Pawn.new(WHITE_PIECES[5]) if n == 25
+      @board.board[n].piece = Pawn.new(WHITE_PIECES[5], n) if n == 25
       #@board.board[n].piece = Knight.new(WHITE_PIECES[1]) if n == 34
     end
   end
 
   def generate_black_pieces
     (0..63).each do |n|
-      #@board.board[n].piece = Rook.new(BLACK_PIECES[0]) if n == 56
+      @board.board[n].piece = Rook.new(BLACK_PIECES[0]) if n == 56 || n == 63
       #@board.board[n].piece = Knight.new(BLACK_PIECES[1]) if n == 34 #n == 59 || n == 61
       #@board.board[n].piece = Bishop.new(BLACK_PIECES[2]) if n == 61 #n == 51 || n == 53
       #@board.board[n].piece = Queen.new(BLACK_PIECES[3]) if n == 40
-      @board.board[n].piece = King.new(BLACK_PIECES[4]) if n == 63
-      #@board.board[n].piece = Pawn.new(BLACK_PIECES[5], convert_coordinates_to_num(@board.board[n].coordinates[0] + @board.board[n].coordinates[1].to_s)) if n == 27
+      @board.board[n].piece = King.new(BLACK_PIECES[4]) if n == 60
+      @board.board[n].piece = Pawn.new(BLACK_PIECES[5], n) if n == 48
     end
   end
 end
@@ -167,8 +244,15 @@ end
 #board = Chessboard.new
 #p board.chessboard[0].piece = Rook.new("\u265C".encode('utf-8'))
 
-#chess = Chess.new
-#chess.generate_starting_board
+chess = Chess.new
+chess.generate_starting_board
+chess.board.print_board
+#p chess.board.board
+#board1 = Marshal::dump(chess.board)
+#p Marshal::load(board1) === chess.board
+#p chess.board.object_id
+#p Marshal::load(board1).object_id
+#chess.move_piece("a1", "b1", 1)
 #chess.board.print_board
 
 #chess.board.print_board
@@ -178,7 +262,7 @@ end
 #p chess.board.board[8].piece.move_count
 #p chess.board.chessboard[0].piece #.starting_positions #[0].coordinates
 
-#chess.take_turns
+chess.take_turns
 
 #p chess.board.board[35].piece.move_count
 #p chess.board.board[8].piece.move_count

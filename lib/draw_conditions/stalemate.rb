@@ -31,9 +31,15 @@ class Stalemate
     @board.board.each_with_index do |tile, idx|
       next if tile.piece == " " || color_of_opponent_piece.include?(tile.piece.piece)
       return true if tile.piece.starting_positions[idx].possible_moves.all? do |n|
+        #if rook_can_move_legally?(tile, idx, n)
+        #  player_in_check_after_moving_piece?(idx, n)
+        #elsif king_can_move_legally?(tile, idx, n)
+        #  player_in_check_after_moving_piece?(idx, n)
+        #end
         player_in_check_after_moving_piece?(idx, n) if piece_can_move_legally?(tile, idx, n)
-      end || false
+      end
     end
+    false
   end
 
   private
