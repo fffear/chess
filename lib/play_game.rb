@@ -6,7 +6,6 @@ $: << "#{File.expand_path('../modules', __FILE__)}"
 $: << "#{File.expand_path('../check_checkmate', __FILE__)}"
 $: << "#{File.expand_path('../draw_conditions', __FILE__)}"
 
-
 require 'chessboard'
 require 'rook'
 require 'knight'
@@ -27,6 +26,7 @@ require 'check'
 require 'checkmate'
 require 'stalemate'
 require 'threefold_repetition'
+require 'fifty_move_draw'
 
 # insufficient checkmate material (knight, bishop)
 # position move 3 times
@@ -36,7 +36,9 @@ class Chess
   include ChessPieces
   include Coordinates
   attr_accessor :board, :player_1, :player_2, :turn_count, :white_king_position, :black_king_position, :white_pieces_location,
-                :black_pieces_location, :board_before_move, :origin, :destination, :board_history
+                :black_pieces_location, :board_before_move, :origin, :destination, :board_history, :pawn_positions_before_full_move,
+                :pawn_positions_after_full_move, :no_of_pieces_before_full_move, :no_of_pieces_after_full_move,
+                :fifty_move_count
 
   def initialize
     @board = Chessboard.new
@@ -44,6 +46,7 @@ class Chess
     @player_2 = Player.new("black", BLACK_PIECES, WHITE_PIECES)
     @turn_count = 0
     @board_history = []
+    @fifty_move_count = 0
   end
 
   def snapshot_before_move
@@ -88,12 +91,15 @@ class Chess
   end
 
   def take_turns
+    #p count_of_pieces
     @board_history << Marshal::dump(@board)
     loop do
       @board_before_move = Marshal::dump(@board)
       loop do
         reset_origin_and_destination
         @board = Marshal::load(@board_before_move)
+        p @pawn_positions_before_full_move = find_pawn_positions
+        p @no_of_pieces_before_full_move = count_of_pieces
         board.print_board
         ensure_valid_origin_and_destination
         move_piece(@origin, @destination, 1)
@@ -131,7 +137,10 @@ class Chess
       break if ThreefoldRepetition.new(@board, @board_history, @turn_count).compute && claim_threefold_repetition_draw?("White player")
       @board_history << Marshal::dump(@board)
       puts "Checkmate for White player. White player loses." if CheckMate.new(board, WHITE_PIECES, @turn_count).compute
-      #CheckMate.new(board, WHITE_PIECES).take_piece_that_gives_check_to_remove_check
+      p @pawn_positions_after_full_move = find_pawn_positions
+      p @no_of_pieces_after_full_move = count_of_pieces
+      break if fifty_moves_reached?
+      p @pawn_positions_before_full_move - @pawn_positions_after_full_move
       puts "White King in Check." if king_in_check?(board, WHITE_PIECES)
       puts "It is a stalemate" if Stalemate.new(board, WHITE_PIECES, @turn_count).compute
       resign_game("Black player", "White player")
@@ -139,6 +148,22 @@ class Chess
       # propose draw
       break if @turn_count == 100
     end
+  end
+
+  def count_of_pieces
+    @board.board.count { |tile| tile.piece != " " }
+  end
+
+  def find_pawn_positions
+    pawn_positions = []
+    @board.board.each_with_index do |tile, idx|
+      pawn_positions << idx if tile.piece != " " && (tile.piece.piece == WHITE_PIECES[5] || tile.piece.piece == BLACK_PIECES[5])
+    end
+    pawn_positions
+  end
+
+  def fifty_moves_reached?
+    FiftyMoveDraw.new(@pawn_positions_before_full_move, @pawn_positions_after_full_move, @no_of_pieces_before_full_move, @no_of_pieces_after_full_move).compute
   end
 
   def claim_threefold_repetition_draw?(player)
