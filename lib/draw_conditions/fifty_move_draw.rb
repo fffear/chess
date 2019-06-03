@@ -12,12 +12,12 @@ class FiftyMoveDraw
   attr_accessor :fifty_move_count, :pawn_positions_before_full_move, :pawn_positions_after_full_move,
                 :no_of_pieces_before_full_move, :no_of_pieces_after_full_move
 
-  def initialize(pawn_positions_before_full_move, pawn_positions_after_full_move, no_of_pieces_before_full_move, no_of_pieces_after_full_move)
+  def initialize(pawn_positions_before_full_move, pawn_positions_after_full_move, no_of_pieces_before_full_move, no_of_pieces_after_full_move, fifty_move_count)
     @pawn_positions_before_full_move = pawn_positions_before_full_move
     @pawn_positions_after_full_move = pawn_positions_after_full_move
     @no_of_pieces_before_full_move = no_of_pieces_before_full_move
     @no_of_pieces_after_full_move = no_of_pieces_after_full_move
-    @fifty_move_count = 0
+    @fifty_move_count = fifty_move_count
   end
 
   def fifty_move_rule_draw?
@@ -29,8 +29,12 @@ class FiftyMoveDraw
     (fifty_move_rule_draw?) ? @fifty_move_count += 1 : @fifty_move_count = 0
   end
 
+  def update_fifty_move_count
+    (fifty_move_rule_draw?) ? @fifty_move_count += 1 : @fifty_move_count = 0
+  end
+
   def compute
-    p count_fifty_move_rule
+    p @fifty_move_count
     if @fifty_move_count == 50
       puts "It has been 50 moves since either the last piece has been taken, or a pawn has moved."
       puts "The game is a draw."
