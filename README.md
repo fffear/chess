@@ -1,4 +1,4 @@
-### Ruby Chess Game
+# Ruby Chess Game
 
 This is the final capstone project as part of the Ruby Programming Course at The Odin Project.
 
@@ -19,14 +19,14 @@ The game will be properly constrained, which will:
 - declare check and checkmate in the appropriate situations
 - declare any draw by stalemate, threefold repetition and by 50 count move rule
 
-## Prerequisite
+### Prerequisite
 You will need to have ruby 2.5.3 or above installed to play.
 
-## Install and Play Chess
+### Install and Play Chess
 1. Clone this repository onto your local machine.
 1. Navigate to the 'lib' directory located in the root directory on the program
 1. Enter ```ruby play_chess.rb```
 1. Follow the instructions to play
 
-## Useful Links
+### Useful Links
 Link to [The Odin Project assignment page](https://www.theodinproject.com/courses/ruby-programming/lessons/ruby-final-project)

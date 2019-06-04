@@ -1,6 +1,7 @@
 $: << "#{File.expand_path('../../chessboard', __FILE__)}"
 $: << "#{File.expand_path('../../move_pieces', __FILE__)}"
 $: << "#{File.expand_path('../../chess_pieces', __FILE__)}"
+
 require 'chessboard'
 require 'coordinates'
 require 'chess_pieces'

@@ -105,8 +105,8 @@ class Chess
   end
 
   def load_saved_game
+    return if no_saved_games? || !(File.exists?("#{File.expand_path('..', __dir__)}/saved_games"))
     p File.dirname __FILE__
-    return if no_saved_games? || !(File.exists?("../saved_games"))
     loop do
       puts "Do you want to load a saved game? (y/n)"
       load_game_answer = gets.chomp.downcase
@@ -157,7 +157,7 @@ class Chess
   end
 
   def name_saved_file
-    Dir.mkdir("../saved_games") unless File.exists?("../saved_games")
+    Dir.mkdir("#{File.expand_path('..', __dir__)}/saved_games") unless File.exists?("#{File.expand_path('..', __dir__)}/saved_games")
     puts "Please name the saved file."
     saved_fname = gets.chomp
     @filename = saved_fname
@@ -190,10 +190,10 @@ class Chess
         puts "Invalid response entered."
         redo
       elsif number_of_file =~ /\d+/
-        if number_of_file.to_i > Dir.glob("../saved_games/*").length
+        if number_of_file.to_i > Dir.glob("#{File.expand_path('..', __dir__)}/saved_games/*").length
           puts "There is no file corresponding to that number."
           redo
-        elsif number_of_file.to_i <= Dir.glob("../saved_games/*").length && number_of_file.to_i > 0
+        elsif number_of_file.to_i <= Dir.glob("#{File.expand_path('..', __dir__)}/saved_games/*").length && number_of_file.to_i > 0
           File.open(Dir.glob("../saved_games/*")[number_of_file.to_i - 1], "r") { |file| from_marshal_string(file) }
           break
         end
@@ -223,12 +223,10 @@ class Chess
         white_player_action
         break if game_end_conditions_after_white_move?
         update_board_history_and_save_game_after_white_action
-        #break if white_player_turn.call
       elsif @turn_count.odd?
         black_player_action
         break if game_end_conditions_after_black_move?
         update_board_history_and_save_game_after_black_action
-        #break if black_player_turn.call
       end
     end
   end
@@ -264,21 +262,6 @@ class Chess
     end
   end
 
-  def black_player_turn
-    lambda do
-      black_player_action
-      return true if game_end_conditions_after_black_move?
-      update_board_history_and_save_game_after_black_action
-    end
-  end
-
-  def white_player_action
-    @board_before_move = Marshal::dump(@board)
-    white_move
-    @turn_count += 1
-    board.print_board
-  end
-
   def update_board_history_and_save_game_after_white_action
     @board_history << Marshal::dump(@board)
     save_game
@@ -298,7 +281,8 @@ class Chess
   end
 
   def no_saved_games?
-    File.exists?("../saved_games") && Dir.glob("../saved_games/*").length == 0
+    File.exists?("#{File.expand_path('..', __dir__)}/saved_games") &&
+    Dir.glob("#{File.expand_path('..', __dir__)}/saved_games/*").length == 0
   end
 
   def checkmate?(color_pieces, turn_count)

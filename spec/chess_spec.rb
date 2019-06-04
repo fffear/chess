@@ -178,17 +178,17 @@ describe Chess do
     end
   end
 
-  #describe "#select_game_to_load" do
-  #  context "with '1' input" do
-  #    it "should run #from_marshal_string" do
-  #      allow(chess).to receive(:gets).and_return("1")
-  #      file = double("file")
-  #      allow(File).to receive(:open).with(Dir.glob("../saved_games/*")[0], "r").and_yield(file)
-  #      expect(chess).to receive(:from_marshal_string).with(file)
-  #      chess.select_game_to_load
-  #    end
-  #  end
-  #end
+  describe "#select_game_to_load" do
+    context "with '1' input" do
+      it "should run #from_marshal_string" do
+        allow(chess).to receive(:gets).and_return("1")
+        file = double("file")
+        allow(File).to receive(:open).with(Dir.glob("../saved_games/*")[0], "r").and_yield(file)
+        expect(chess).to receive(:from_marshal_string).with(file)
+        chess.select_game_to_load
+      end
+    end
+  end
 
   describe "#claim_threefold_repetition_draw?" do
     context "with 'n' input" do
