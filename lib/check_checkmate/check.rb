@@ -12,14 +12,11 @@ class Check
   include Coordinates
   include PossibleMoves
   include ChessPieces
-  #include GenerateMoves
 
   def initialize(board, color_of_own_piece)
     @board = board
     @color_of_own_piece = color_of_own_piece
     determine_opponent_piece
-    #@color_of_opponent_piece = color_of_opponent_piece
-    #@own_piece = @color_of_opponent_piece
   end
 
   def determine_opponent_piece
@@ -50,7 +47,6 @@ class Check
     board.board.each_with_index do |tile, idx|
       next if tile.piece == " "
       if color == WHITE_PIECES
-      #if color == "white"
         return @king_position = idx if tile.piece.piece == WHITE_PIECES[4]
       else
         return @king_position = idx if tile.piece.piece == BLACK_PIECES[4]

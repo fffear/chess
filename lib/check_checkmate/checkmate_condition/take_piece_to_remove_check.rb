@@ -26,7 +26,6 @@ class TakePieceToRemoveCheck
   end
 
   def compute
-    #p "This is inside test 3"
     return false if @tile_num_of_threatening_piece.length == 0
     @board.board.each_with_index do |tile, idx|
       next if tile.piece == " " || color_of_opponent_piece.include?(tile.piece.piece)
@@ -36,7 +35,6 @@ class TakePieceToRemoveCheck
         end
       end
     end
-    #p "Testing if take piece to remove check returns true"
     return true
   end
 
@@ -120,9 +118,6 @@ class TakePieceToRemoveCheck
   end
 
   def enpassant_conditions?(idx, n)
-    #p "Testing Enpassant conditions"
-    #p @turn_count
-    #p board.board[n].piece.time_first_move
     enpassant_up?(idx, n) || enpassant_down?(idx, n)
   end
 

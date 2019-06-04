@@ -1,9 +1,3 @@
-# # White Queen
-# p "\u2655".encode('utf-8')
-
-# # Black Queen
-# p "\u265B".encode('utf-8')
-
 $: << "#{File.expand_path('../../chess_pieces', __FILE__)}"
 require 'generate_moves'
 
@@ -28,6 +22,3 @@ class Queen
     @starting_positions
   end
 end
-
-#queen = Queen.new("\u265B".encode('utf-8'))
-#p queen.all_possible_moves

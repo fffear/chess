@@ -18,7 +18,7 @@ describe Chess do
       it "should output error message when 'i1' coordinates entered" do
         allow(chess).to receive(:gets).and_return("i1")
         expect {chess.ensure_valid_origin("white player")}.to output(
-          "white player, please enter the coordinates of the piece you would like to move\nYou have entered an invalid coordinate. Please try again.\n"
+          "white player, please enter the coordinates of the piece you would like to move (e.g. a4)\nYou have entered an invalid coordinate. Please try again.\n"
           ).to_stdout  
       end
     end
@@ -105,7 +105,7 @@ describe Chess do
     end
 
     context "with 'y' input" do
-      it "run #select_game_to_load" do
+      it "should run #select_game_to_load" do
         allow(chess).to receive(:gets).and_return("y")
         expect(chess).to receive(:select_game_to_load)
         chess.load_saved_game
@@ -178,17 +178,17 @@ describe Chess do
     end
   end
 
-  describe "#select_game_to_load" do
-    context "with '1' input" do
-      it "should run #from_marshal_string" do
-        allow(chess).to receive(:gets).and_return("1")
-        file = double("file")
-        allow(File).to receive(:open).with(Dir.glob("../saved_games/*")[0], "r").and_yield(file)
-        expect(chess).to receive(:from_marshal_string).with(file)
-        chess.select_game_to_load
-      end
-    end
-  end
+  #describe "#select_game_to_load" do
+  #  context "with '1' input" do
+  #    it "should run #from_marshal_string" do
+  #      allow(chess).to receive(:gets).and_return("1")
+  #      file = double("file")
+  #      allow(File).to receive(:open).with(Dir.glob("../saved_games/*")[0], "r").and_yield(file)
+  #      expect(chess).to receive(:from_marshal_string).with(file)
+  #      chess.select_game_to_load
+  #    end
+  #  end
+  #end
 
   describe "#claim_threefold_repetition_draw?" do
     context "with 'n' input" do

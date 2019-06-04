@@ -28,9 +28,7 @@ describe Player do
     
     it "moves a black rook piece" do
       chessboard.board[0].piece = Rook.new(ChessPieces::BLACK_PIECES[0])
-      chessboard.print_board
       expect {player_2.move_piece("a1", "a8", chessboard, ChessPieces::BLACK_PIECES, ChessPieces::WHITE_PIECES, 1)}.to change {chessboard.board[0].piece}.and change {chessboard.board[56].piece}
-      chessboard.print_board
     end
 
     it "fails to move a white rook piece as the black player" do

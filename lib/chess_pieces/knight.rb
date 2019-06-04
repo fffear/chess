@@ -1,9 +1,3 @@
-# # White Knight
-# p "\u2658".encode('utf-8')
-
-# # Black Knight
-# p "\u265E".encode('utf-8')
-
 $: << "#{File.expand_path('../../chessboard', __FILE__)}"
 require 'chessboard'
 
@@ -46,6 +40,3 @@ class Knight
     starting_positions[n].possible_moves << n + shift_factor
   end
 end
-
-#knight = Knight.new("\u2658".encode('utf-8'))
-#p knight.starting_positions

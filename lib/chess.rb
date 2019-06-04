@@ -52,21 +52,21 @@ class Chess
   end
 
   def ensure_valid_origin(player)
-    puts "#{player}, please enter the coordinates of the piece you would like to move"
-    @origin = gets.chomp
+    puts "#{player}, please enter the coordinates of the piece you would like to move (e.g. a4)"
+    @origin = gets.chomp.downcase
     puts "You have entered an invalid coordinate. Please try again." unless valid_coordinate?(@origin)
   end
 
   def ensure_valid_destination(player)
-    puts "#{player}, please enter the coordinates on the board you would like to move the selected piece to"
-    @destination = gets.chomp
+    puts "#{player}, please enter the coordinates on the board you would like to move the selected piece to (e.g. a4)"
+    @destination = gets.chomp.downcase
     puts "You have entered an invalid coordinate. Please try again." unless valid_coordinate?(@destination)
   end
 
   def resign_game?(player1, player2)
     loop do
       puts "#{player1}, do you want to resign? (y/n)"
-      resign_answer = gets.chomp
+      resign_answer = gets.chomp.downcase
       if ["yes", "y", "no", "n"].none? { |ans| resign_answer == ans }
         puts "Please enter a valid answer."
         redo
@@ -105,9 +105,10 @@ class Chess
   end
 
   def load_saved_game
+    p File.dirname __FILE__
     return if no_saved_games? || !(File.exists?("../saved_games"))
     loop do
-      puts "Do you want to load a saved game?"
+      puts "Do you want to load a saved game? (y/n)"
       load_game_answer = gets.chomp.downcase
       if ["yes", "y", "no", "n"].none? { |ans| ans == load_game_answer }
         puts "Invalid answer."
@@ -219,9 +220,15 @@ class Chess
     load_saved_game
     loop do
       if @turn_count.even?
-        break if white_player_turn.call
+        white_player_action
+        break if game_end_conditions_after_white_move?
+        update_board_history_and_save_game_after_white_action
+        #break if white_player_turn.call
       elsif @turn_count.odd?
-        break if black_player_turn.call
+        black_player_action
+        break if game_end_conditions_after_black_move?
+        update_board_history_and_save_game_after_black_action
+        #break if black_player_turn.call
       end
     end
   end
@@ -427,27 +434,24 @@ class Chess
   end
 
   def generate_white_pieces
-    (0..55).each do |n|
+    (0..15).each do |n|
       @board.board[n].piece = Rook.new(WHITE_PIECES[0]) if n == 0 || n == 7
-      #@board.board[n].piece = Knight.new(WHITE_PIECES[1]) if n == 46#n == 20 || n == 21 #|| n == 37
-      #@board.board[n].piece = Bishop.new(WHITE_PIECES[2]) if n == 8
-      #@board.board[n].piece = Queen.new(WHITE_PIECES[3]) if n == 8
+      @board.board[n].piece = Knight.new(WHITE_PIECES[1]) if n == 1 ||n == 6
+      @board.board[n].piece = Bishop.new(WHITE_PIECES[2]) if n == 2 || n == 5
+      @board.board[n].piece = Queen.new(WHITE_PIECES[3]) if n == 3
       @board.board[n].piece = King.new(WHITE_PIECES[4]) if n == 4
-      @board.board[n].piece = Pawn.new(WHITE_PIECES[5], n) if n == 45#n == 11 || n == 13
-      #@board.board[n].piece = Pawn.new(WHITE_PIECES[5], convert_coordinates_to_num(@board.board[n].coordinates[0] + @board.board[n].coordinates[1].to_s)) if n == 50 #n >= 8 || n == 35
-      @board.board[n].piece = Pawn.new(WHITE_PIECES[5], n) if n == 25
-      #@board.board[n].piece = Knight.new(WHITE_PIECES[1]) if n == 34
+      @board.board[n].piece = Pawn.new(WHITE_PIECES[5], n) if n > 7
     end
   end
 
   def generate_black_pieces
-    (0..63).each do |n|
+    (48..63).each do |n|
       @board.board[n].piece = Rook.new(BLACK_PIECES[0]) if n == 56 || n == 63
-      #@board.board[n].piece = Knight.new(BLACK_PIECES[1]) if n == 34 #n == 59 || n == 61
-      #@board.board[n].piece = Bishop.new(BLACK_PIECES[2]) if n == 61 #n == 51 || n == 53
-      #@board.board[n].piece = Queen.new(BLACK_PIECES[3]) if n == 40
+      @board.board[n].piece = Knight.new(BLACK_PIECES[1]) if n == 57 || n == 62
+      @board.board[n].piece = Bishop.new(BLACK_PIECES[2]) if n == 58 || n == 61
+      @board.board[n].piece = Queen.new(BLACK_PIECES[3]) if n == 59
       @board.board[n].piece = King.new(BLACK_PIECES[4]) if n == 60
-      @board.board[n].piece = Pawn.new(BLACK_PIECES[5], n) if n == 48
+      @board.board[n].piece = Pawn.new(BLACK_PIECES[5], n) if n < 56
     end
   end
 
@@ -492,38 +496,3 @@ class Chess
     end
   end
 end
-
-
-#board = Chessboard.new
-#p board.chessboard[0].piece = Rook.new("\u265C".encode('utf-8'))
-
-#chess = Chess.new
-#chess.generate_starting_board
-#chess.board.print_board
-
-
-#p chess.board.board
-#board1 = Marshal::dump(chess.board)
-#p Marshal::load(board1) === chess.board
-#p chess.board.object_id
-#p Marshal::load(board1).object_id
-#chess.move_piece("a1", "b1", 1)
-#chess.board.print_board
-
-#chess.board.print_board
-
-#p chess.board.board[0].piece.starting_positions[0]#.possible_moves
-
-#p chess.board.board[8].piece.move_count
-#p chess.board.chessboard[0].piece #.starting_positions #[0].coordinates
-
-#chess.play_game
-
-#p chess.board.board[35].piece.move_count
-#p chess.board.board[8].piece.move_count
-
-#chess.move_piece("d2", "d4", 1)
-#chess.board.print_board
-#p chess.board.board[16]
-#[@start].piece.starting_positions[@start].possible_moves.include?(@final)
-#p chess.board

@@ -19,15 +19,8 @@ module PossibleMoves
   end
 
   def diagonal_bot_right_to_top_left_move?(piece_location, king_position)
-    #king_position > piece_location && piece_location % 8 > 0 && 
-    #if piece_location % 7 == 0 && king_position >= piece_location + 7
-    #  return false
-    #end
     (king_position > piece_location && (7..7 * (piece_location % 8)).step(7).one? { |n| king_position == piece_location + n }) ||
     (piece_location > king_position && (-49 + 7 * (piece_location % 8)..-7).step(7).one? { |n| king_position == piece_location + n })
-
-    #(king_position > piece_location && [7, 14, 21, 28, 35, 42, 49].one? { |n| king_position == piece_location + n }) ||
-    #(piece_location > king_position && [-7, -14, -21, -28, -35, -42, -49].one? { |n| king_position == piece_location + n })
   end
 
   def blocked_upwards_and_to_the_right?(shift_factor, piece_location, king_position)

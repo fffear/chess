@@ -1,8 +1,3 @@
-#Move the king away to a square where he is not in check.
-#Take the piece that gives the check.
-#(In case of a check, given by a rook, bishop or queen: ) move a piece between the checking piece and the king.
-
-
 $: << "#{File.expand_path('../../modules', __FILE__)}"
 $: << "#{File.expand_path('../../chess_pieces', __FILE__)}"
 $: << "#{File.expand_path('../../move_pieces', __FILE__)}"
@@ -39,7 +34,7 @@ class CheckMate
   end
 
   def impossible_to_move_out_of_check_by_moving_king?
-    move_king_out_of_check?
+    fail_to_move_king_out_of_check?
   end
 
   def impossible_to_take_piece_that_gives_check_to_remove_check?
@@ -128,17 +123,16 @@ class CheckMate
     Check.new(board, color_of_own_piece).find_king_position(@color_of_own_piece)
   end
 
-  def move_king_out_of_check?
+  def fail_to_move_king_out_of_check?
     board.board[@king_position].piece.starting_positions[@king_position].possible_moves.all? do |tile|
       if board.board[tile].piece == " " || color_of_opponent_piece.include?(board.board[tile].piece.piece)
         move_king_out_of_check(tile)
         Check.new(@board_after_attempt_to_move_out_of_check, @color_of_own_piece).compute
       elsif color_of_own_piece.include?(board.board[tile].piece.piece)
-        false
+        true
       end
     end
   end
-#
 
   def move_king_out_of_check(tile)
     @board_after_attempt_to_move_out_of_check = Marshal::load(@board_at_check)

@@ -1,9 +1,3 @@
-# # White King
-# p "\u2654".encode('utf-8')
-
-# # Black King
-# p "\u265A".encode('utf-8')
-
 $: << "#{File.expand_path('../../chessboard', __FILE__)}"
 require 'chessboard'
 
@@ -58,6 +52,3 @@ class King
     @starting_positions[n].possible_moves << n + left if n % 8 != 0
   end
 end
-
-king = King.new("\u2654".encode('utf-8'))
-p king.all_possible_moves[0].possible_moves

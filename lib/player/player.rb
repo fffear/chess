@@ -36,7 +36,3 @@ class Player
     ChessPieces::WHITE_PIECES[1] || ChessPieces::BLACK_PIECES[1]
   end
 end
-
-
-# player = Player.new("white", ChessPieces::WHITE_PIECES)
-# p player.pieces

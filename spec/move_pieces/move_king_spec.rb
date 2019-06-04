@@ -4,7 +4,7 @@ $: << "#{File.expand_path('../../../lib/chess_pieces', __FILE__)}"
 $: << "#{File.expand_path('../../../lib/modules', __FILE__)}"
 
 require 'move_king'
-require 'play_game'
+require 'chess'
 require 'chess_pieces'
 require 'coordinates'
 require 'possible_moves'

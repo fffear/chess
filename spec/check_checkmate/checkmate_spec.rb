@@ -4,7 +4,7 @@ $: << "#{File.expand_path('../../../lib/chess_pieces', __FILE__)}"
 $: << "#{File.expand_path('../../../lib/check', __FILE__)}"
 $: << "#{File.expand_path('../../../lib/check/checkmate_condition', __FILE__)}"
 
-require 'play_game'
+require 'chess'
 require 'chess_pieces'
 require 'coordinates'
 require 'checkmate'

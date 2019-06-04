@@ -1,9 +1,3 @@
-# White Bishop
-# p "\u2657".encode('utf-8')
-
-# # Black Bishop
-# p "\u265D".encode('utf-8')
-
 $: << File.expand_path("../../chess_pieces", __FILE__)
 require 'generate_moves'
 
@@ -22,7 +16,3 @@ class Bishop
     @starting_positions
   end
 end
-
-#bishop = Bishop.new("\u2657".encode('utf-8'))
-#p bishop.generate_all_diagonal_moves
-#p bishop.starting_positions[1]

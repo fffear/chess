@@ -5,14 +5,6 @@ $: << "#{File.expand_path('../../move_pieces', __FILE__)}"
 require 'chess_pieces'
 require 'coordinates'
 
-#require 'chessboard'
-#require 'rook'
-#require 'knight'
-#require 'bishop'
-#require 'queen'
-#require 'king'
-#require 'pawn'
-
 class MovePawn
   include ChessPieces
   include Coordinates

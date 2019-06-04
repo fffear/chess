@@ -34,7 +34,6 @@ class FiftyMoveDraw
   end
 
   def compute
-    p @fifty_move_count
     if @fifty_move_count == 50
       puts "It has been 50 moves since either the last piece has been taken, or a pawn has moved."
       puts "The game is a draw."
