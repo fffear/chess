@@ -35,7 +35,7 @@ describe Knight do
 
     context "returns the exact array of possible moves for each starting position" do
       (0..63).each do |n|
-        it "position #{0}" do
+        it "position #{n}" do
           expect(knight.all_possible_moves[0].possible_moves).to match_array(possible_moves(0))
         end
       end

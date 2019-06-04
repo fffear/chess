@@ -7,14 +7,6 @@ require 'chess_pieces'
 require 'coordinates'
 require 'check'
 
-#require 'chessboard'
-#require 'rook'
-#require 'knight'
-#require 'bishop'
-#require 'queen'
-#require 'king'
-#require 'pawn'
-
 class MoveKing
   include ChessPieces
   include Coordinates
@@ -62,17 +54,9 @@ class MoveKing
     (@final - @start == 2 && board.board[@final + 1].piece != " " && (@start + 1..@final).all? { |n| board.board[n].piece == " " } && rook_unmoved?(1) && king_unmoved?)
   end
 
-  #def king_in_check?(board, color_of_own_piece, opponent_pieces)
-  #  Check.new(board, color_of_own_piece, opponent_pieces).compute
-  #end
-
   def king_in_check?(board, color_of_own_piece)
     Check.new(board, color_of_own_piece).compute
   end
-
-  #def tile_adjacent_to_king_threatened?(board, color_of_own_piece, opponent_pieces, shift_factor)
-  #  Check.new(board, color_of_own_piece, opponent_pieces).castling_check?(shift_factor)
-  #end
 
   def tile_adjacent_to_king_threatened?(board, color_of_own_piece, shift_factor)
     Check.new(board, color_of_own_piece).castling_check?(shift_factor)
@@ -87,8 +71,6 @@ class MoveKing
     @board.board[@final - 2].piece = " "
     @board.board[@final].piece.time_first_move = @turn_count
     @board.board[@final + 1].piece.time_first_move = @turn_count
-    p @board.board[@final].piece.time_first_move
-    p @board.board[@final + 1].piece.time_first_move
   end
 
   def castle_kingside
@@ -100,8 +82,6 @@ class MoveKing
     @board.board[@final + 1].piece = " "
     @board.board[@final].piece.time_first_move = @turn_count
     @board.board[@final - 1].piece.time_first_move = @turn_count
-    p @board.board[@final].piece.time_first_move
-    p @board.board[@final - 1].piece.time_first_move
   end
 
   def castle_king

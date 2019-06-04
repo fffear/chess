@@ -27,7 +27,6 @@ require 'checkmate'
 require 'stalemate'
 require 'threefold_repetition'
 require 'fifty_move_draw'
-require 'json'
 
 class Chess
   include ChessPieces
@@ -62,157 +61,6 @@ class Chess
     puts "#{player}, please enter the coordinates on the board you would like to move the selected piece to"
     @destination = gets.chomp
     puts "You have entered an invalid coordinate. Please try again." unless valid_coordinate?(@destination)
-  end
-
-  def ensure_valid_origin_and_destination(player)
-    reset_origin_and_destination
-    ensure_valid_origin(player) until !@origin.nil? && valid_coordinate?(@origin)
-    ensure_valid_destination(player) until !@destination.nil? && valid_coordinate?(@destination)
-  end
-
-  def reset_origin_and_destination
-    @origin = nil
-    @destination = nil
-  end
-
-  def valid_coordinate?(coordinate)
-    return false unless LETTERS.one? { |l| l == coordinate[0] } && (1..8).include?(coordinate[1].to_i)
-    return false if coordinate.length > 2
-    true if LETTERS.one? { |l| l == coordinate[0] } && (1..8).include?(coordinate[1].to_i)
-  end
-
-  def play_game
-    @board_history << Marshal::dump(@board)
-    load_saved_game
-    loop do
-      if @turn_count.even?
-        break if white_player_turn.call
-      elsif @turn_count.odd?
-        break if black_player_turn.call
-      end
-    end
-  end
-
-  def white_player_turn
-    lambda do
-      white_player_action
-      return true if game_end_conditions_after_white_move?
-      update_board_history_and_save_game_after_white_action
-    end
-  end
-
-  def black_player_turn
-    lambda do
-      black_player_action
-     return true if game_end_conditions_after_black_move?
-      update_board_history_and_save_game_after_black_action
-    end
-  end
-
-  def white_player_action
-    @board_before_move = Marshal::dump(@board)
-    white_move
-    @turn_count += 1
-    board.print_board
-  end
-
-  def update_board_history_and_save_game_after_white_action
-    @board_history << Marshal::dump(@board)
-    save_game
-  end
-
-  def black_player_action
-    @board_before_move = Marshal::dump(@board)
-    black_move
-    @turn_count += 1
-    board.print_board
-  end
-
-  def update_board_history_and_save_game_after_black_action
-    @board_history.clear if @no_of_pieces_before_full_move > @no_of_pieces_after_full_move
-    @board_history << Marshal::dump(@board)
-    save_game
-  end
-
-  def load_saved_game
-    loop do
-      puts "Do you want to load a saved game?"
-      load_game_answer = gets.chomp.downcase
-      if ["yes", "y", "no", "n"].none? { |ans| ans == load_game_answer }
-        puts "Invalid answer."
-        redo
-      elsif ["yes", "y"].one? { |ans| ans == load_game_answer }
-        select_game_to_load
-        break
-      end
-      break if ["no", "n"].one? { |ans| ans == load_game_answer }
-    end
-  end
-
-  def select_game_to_load
-    loop do
-      puts "Please select the number of the file you would like to load:"
-      Dir.glob("../saved_games/*").each_with_index do |file, idx|
-        puts file.gsub("../saved_games/", "#{idx + 1}- ")
-      end
-      number_of_file = gets.chomp
-      if number_of_file =~ /\D+/
-        puts "Invalid response entered."
-        redo
-      elsif number_of_file =~ /\d+/
-        if number_of_file.to_i > Dir.glob("../saved_games/*").length
-          puts "There is no file corresponding to that number."
-          redo
-        elsif number_of_file.to_i <= Dir.glob("../saved_games/*").length && number_of_file.to_i > 0
-          File.open(Dir.glob("../saved_games/*")[number_of_file.to_i - 1], "r") { |file| from_marshal_string(file) }
-          break
-        end
-      end
-    end
-  end
-
-  def checkmate?(color_pieces, turn_count)
-    if CheckMate.new(@board, color_pieces, turn_count).compute
-      puts "Checkmate for Black player. Black player loses." if color_pieces == BLACK_PIECES
-      puts "Checkmate for White player. White player loses." if color_pieces == WHITE_PIECES
-    end
-  end
-
-  def count_of_pieces
-    @board.board.count { |tile| tile.piece != " " }
-  end
-
-  def find_pawn_positions
-    pawn_positions = []
-    @board.board.each_with_index do |tile, idx|
-      pawn_positions << idx if tile.piece != " " && (tile.piece.piece == WHITE_PIECES[5] || tile.piece.piece == BLACK_PIECES[5])
-    end
-    pawn_positions
-  end
-
-  def tiles_with_chess_pieces(current_board)
-    piece_positions = []
-    current_board.board.each_with_index { |tile, idx| piece_positions << idx if tile.piece != " " }
-    piece_positions
-  end
-
-  def fifty_moves_reached?
-    @fifty_move_count = FiftyMoveDraw.new(@pawn_positions_before_full_move, @pawn_positions_after_full_move, @no_of_pieces_before_full_move, @no_of_pieces_after_full_move, @fifty_move_count).update_fifty_move_count
-    FiftyMoveDraw.new(@pawn_positions_before_full_move, @pawn_positions_after_full_move, @no_of_pieces_before_full_move, @no_of_pieces_after_full_move, @fifty_move_count).compute
-  end
-
-  def claim_threefold_repetition_draw?(player)
-    loop do
-      puts "The board has repeated 3 times. #{player}, do you want to claim a draw? (y/n)"
-      claim_draw_answer = gets.chomp
-      if ["yes", "y", "no", "n"].none? { |ans| claim_draw_answer == ans }
-        puts "Please enter a valid answer."
-        redo
-      end
-      puts "The game is a draw." if ["yes", "y"].one? { |ans| claim_draw_answer == ans }
-      return false if ["no", "n"].one? { |ans| claim_draw_answer == ans }
-      return true
-    end
   end
 
   def resign_game?(player1, player2)
@@ -256,15 +104,67 @@ class Chess
     end
   end
 
-  def move_piece(origin, destination, player)
-    if player == 1
-      player_1.move_piece(origin, destination, @board, player_1.pieces, player_2.pieces, @turn_count)
-    else
-      player_2.move_piece(origin, destination, @board, player_2.pieces, player_1.pieces, @turn_count)
+  def load_saved_game
+    return if no_saved_games? || !(File.exists?("../saved_games"))
+    loop do
+      puts "Do you want to load a saved game?"
+      load_game_answer = gets.chomp.downcase
+      if ["yes", "y", "no", "n"].none? { |ans| ans == load_game_answer }
+        puts "Invalid answer."
+        redo
+      elsif ["yes", "y"].one? { |ans| ans == load_game_answer }
+        select_game_to_load
+        break
+      end
+      break if ["no", "n"].one? { |ans| ans == load_game_answer }
     end
   end
 
-  def marshal_save
+  def save_game
+    loop do
+      puts "Do you want to save the game? (y/n)"
+      save_game_answer = gets.chomp.downcase
+      if ["yes", "y", "no", "n"].none? { |ans| ans == save_game_answer }
+        puts "Invalid answer."
+        redo
+      elsif ["yes", "y"].one? { |ans| ans == save_game_answer }
+        determine_saved_file_name
+        break
+      elsif ["no", "n"].one? { |ans| ans == save_game_answer }
+        break
+      end
+    end
+  end
+
+  def determine_saved_file_name
+    loop do
+      if @filename != nil
+        puts "This game was previously saved as '#{@filename}.txt'.\nDo you want to save under the same name? (y/n)"
+        answer = gets.chomp
+        if ["yes", "y", "no", "n"].none? { |ans| ans == answer }
+          puts "Invalid answer."
+          redo
+        elsif ["yes", "y"].one? { |ans| ans == answer }
+          File.open("../saved_games/#{@filename}.txt", "w") { |file| file.puts marshal_save_game }
+          puts "\nYou have saved the game as '#{@filename}.txt'."
+          return
+        end
+      end
+      break
+    end
+    name_saved_file
+  end
+
+  def name_saved_file
+    Dir.mkdir("../saved_games") unless File.exists?("../saved_games")
+    puts "Please name the saved file."
+    saved_fname = gets.chomp
+    @filename = saved_fname
+    File.open("../saved_games/#{saved_fname}.txt", "w") { |file| file.puts marshal_save_game }
+    puts "\nYou have saved the game as '#{saved_fname}.txt'."
+  end
+
+  def marshal_save_game
     Marshal::dump({
                     :board => @board,
                     :board_history => @board_history,
@@ -276,6 +176,160 @@ class Chess
                     :no_of_pieces_after_full_move => @no_of_pieces_after_full_move,
                     :filename => @filename
                   })
+  end
+
+  def select_game_to_load
+    loop do
+      puts "Please select the number of the file you would like to load:"
+      Dir.glob("../saved_games/*").each_with_index do |file, idx|
+        puts file.gsub("../saved_games/", "#{idx + 1}- ")
+      end
+      number_of_file = gets.chomp
+      if number_of_file =~ /\D+/
+        puts "Invalid response entered."
+        redo
+      elsif number_of_file =~ /\d+/
+        if number_of_file.to_i > Dir.glob("../saved_games/*").length
+          puts "There is no file corresponding to that number."
+          redo
+        elsif number_of_file.to_i <= Dir.glob("../saved_games/*").length && number_of_file.to_i > 0
+          File.open(Dir.glob("../saved_games/*")[number_of_file.to_i - 1], "r") { |file| from_marshal_string(file) }
+          break
+        end
+      end
+    end
+  end
+
+  def claim_threefold_repetition_draw?(player)
+    loop do
+      puts "The board has repeated 3 times. #{player}, do you want to claim a draw? (y/n)"
+      claim_draw_answer = gets.chomp
+      if ["yes", "y", "no", "n"].none? { |ans| claim_draw_answer == ans }
+        puts "Please enter a valid answer."
+        redo
+      end
+      puts "The game is a draw." if ["yes", "y"].one? { |ans| claim_draw_answer == ans }
+      return false if ["no", "n"].one? { |ans| claim_draw_answer == ans }
+      return true
+    end
+  end
+
+  def play_game
+    @board_history << Marshal::dump(@board)
+    load_saved_game
+    loop do
+      if @turn_count.even?
+        break if white_player_turn.call
+      elsif @turn_count.odd?
+        break if black_player_turn.call
+      end
+    end
+  end
+
+  private
+  #def generate_starting_board
+  #  generate_white_pieces
+  #  generate_black_pieces
+  #end
+
+  def ensure_valid_origin_and_destination(player)
+    reset_origin_and_destination
+    ensure_valid_origin(player) until !@origin.nil? && valid_coordinate?(@origin)
+    ensure_valid_destination(player) until !@destination.nil? && valid_coordinate?(@destination)
+  end
+
+  def reset_origin_and_destination
+    @origin = nil
+    @destination = nil
+  end
+
+  def valid_coordinate?(coordinate)
+    return false unless LETTERS.one? { |l| l == coordinate[0] } && (1..8).include?(coordinate[1].to_i)
+    return false if coordinate.length > 2
+    true if LETTERS.one? { |l| l == coordinate[0] } && (1..8).include?(coordinate[1].to_i)
+  end
+
+  def white_player_turn
+    lambda do
+      white_player_action
+      return true if game_end_conditions_after_white_move?
+      update_board_history_and_save_game_after_white_action
+    end
+  end
+
+  def black_player_turn
+    lambda do
+      black_player_action
+      return true if game_end_conditions_after_black_move?
+      update_board_history_and_save_game_after_black_action
+    end
+  end
+
+  def white_player_action
+    @board_before_move = Marshal::dump(@board)
+    white_move
+    @turn_count += 1
+    board.print_board
+  end
+
+  def update_board_history_and_save_game_after_white_action
+    @board_history << Marshal::dump(@board)
+    save_game
+  end
+
+  def black_player_action
+    @board_before_move = Marshal::dump(@board)
+    black_move
+    @turn_count += 1
+    board.print_board
+  end
+
+  def update_board_history_and_save_game_after_black_action
+    @board_history.clear if @no_of_pieces_before_full_move > @no_of_pieces_after_full_move
+    @board_history << Marshal::dump(@board)
+    save_game
+  end
+
+  def no_saved_games?
+    File.exists?("../saved_games") && Dir.glob("../saved_games/*").length == 0
+  end
+
+  def checkmate?(color_pieces, turn_count)
+    if CheckMate.new(@board, color_pieces, turn_count).compute
+      puts "Checkmate for Black player. Black player loses." if color_pieces == BLACK_PIECES
+      puts "Checkmate for White player. White player loses." if color_pieces == WHITE_PIECES
+    end
+  end
+
+  def count_of_pieces
+    @board.board.count { |tile| tile.piece != " " }
+  end
+
+  def find_pawn_positions
+    pawn_positions = []
+    @board.board.each_with_index do |tile, idx|
+      pawn_positions << idx if tile.piece != " " && (tile.piece.piece == WHITE_PIECES[5] || tile.piece.piece == BLACK_PIECES[5])
+    end
+    pawn_positions
+  end
+
+  def tiles_with_chess_pieces(current_board)
+    piece_positions = []
+    current_board.board.each_with_index { |tile, idx| piece_positions << idx if tile.piece != " " }
+    piece_positions
+  end
+
+  def fifty_moves_reached?
+    @fifty_move_count = FiftyMoveDraw.new(@pawn_positions_before_full_move, @pawn_positions_after_full_move, @no_of_pieces_before_full_move, @no_of_pieces_after_full_move, @fifty_move_count).update_fifty_move_count
+    FiftyMoveDraw.new(@pawn_positions_before_full_move, @pawn_positions_after_full_move, @no_of_pieces_before_full_move, @no_of_pieces_after_full_move, @fifty_move_count).compute
+  end
+
+  def move_piece(origin, destination, player)
+    if player == 1
+      player_1.move_piece(origin, destination, @board, player_1.pieces, player_2.pieces, @turn_count)
+    else
+      player_2.move_piece(origin, destination, @board, player_2.pieces, player_1.pieces, @turn_count)
+    end
   end
 
   def from_marshal_string(string)
@@ -300,7 +354,6 @@ class Chess
     @filename = filename
   end
 
-  private
   def king_in_check?(board, color_of_own_piece)
     Check.new(board, color_of_own_piece).compute
   end
@@ -371,50 +424,6 @@ class Chess
     return true if (claim_draw_due_to_threefold_repetition?("White player") || stalemate?(BLACK_PIECES))
     return true if !king_in_check?(board, WHITE_PIECES) && (resign_game?("Black player", "White player") || propose_draw("Black player", "White player"))
     false
-  end
-
-  def save_game
-    loop do
-      puts "Do you want to save the game? (y/n)"
-      save_game_answer = gets.chomp.downcase
-      if ["yes", "y", "no", "n"].none? { |ans| ans == save_game_answer }
-        puts "Invalid answer."
-        redo
-      elsif ["yes", "y"].one? { |ans| ans == save_game_answer }
-        determine_saved_file_name
-        break
-      elsif ["no", "n"].one? { |ans| ans == save_game_answer }
-        break
-      end
-    end
-  end
-
-  def name_saved_file
-    Dir.mkdir("../saved_games") unless File.exists?("../saved_games")
-    puts "Please name the saved file."
-    saved_fname = gets.chomp
-    @filename = saved_fname
-    File.open("../saved_games/#{saved_fname}.txt", "w") { |file| file.puts self.marshal_save }
-    puts "\nYou have saved the game as #{saved_fname}.txt."
-  end
-
-  def determine_saved_file_name
-    loop do
-      if @filename != nil
-        puts "This game was previously saved as '#{@filename}.txt'.\nDo you want to save under the same name? (y/n)"
-        answer = gets.chomp
-        if ["yes", "y", "no", "n"].none? { |ans| ans == answer }
-          puts "Invalid answer."
-          redo
-        elsif ["yes", "y"].one? { |ans| ans == answer }
-          File.open("../saved_games/#{@filename}.txt", "w") { |file| file.puts self.marshal_save }
-          puts "\nYou have saved the game as '#{@filename}.txt'."
-          return
-        end
-      end
-      break
-    end
-    name_saved_file
   end
 
   def generate_white_pieces
@@ -488,9 +497,11 @@ end
 #board = Chessboard.new
 #p board.chessboard[0].piece = Rook.new("\u265C".encode('utf-8'))
 
-chess = Chess.new
-chess.generate_starting_board
-chess.board.print_board
+#chess = Chess.new
+#chess.generate_starting_board
+#chess.board.print_board
+
+
 #p chess.board.board
 #board1 = Marshal::dump(chess.board)
 #p Marshal::load(board1) === chess.board
@@ -506,7 +517,7 @@ chess.board.print_board
 #p chess.board.board[8].piece.move_count
 #p chess.board.chessboard[0].piece #.starting_positions #[0].coordinates
 
-chess.play_game
+#chess.play_game
 
 #p chess.board.board[35].piece.move_count
 #p chess.board.board[8].piece.move_count

@@ -14,8 +14,8 @@ describe MoveKing do
   include ChessPieces
   include PossibleMoves
   let(:chess) { Chess.new }
-  let(:move_white_king) {MoveKing.new(0, 0, chess.board, ChessPieces::WHITE_PIECES)}
-  let(:move_black_king) {MoveKing.new(0, 0, chess.board, ChessPieces::BLACK_PIECES)}
+  let(:move_white_king) {MoveKing.new(0, 0, chess.board, ChessPieces::WHITE_PIECES, 0)}
+  let(:move_black_king) {MoveKing.new(0, 0, chess.board, ChessPieces::BLACK_PIECES, 0)}
   RSpec::Matchers.define_negated_matcher :not_change, :change
 
   def generate_start_and_finish_tile_num(n, l, shift_factor_n, shift_factor_l)
@@ -74,7 +74,6 @@ describe MoveKing do
   end
 
   def test_with_blocking_pieces(n, l, shift_factor_n, shift_factor_l, shift_blocking_piece, king_piece, knight_piece, &block)
-    #RSpec::Matchers.define_negated_matcher :not_change, :change
     tile_num = generate_start_and_finish_tile_num(n, l, shift_factor_n, shift_factor_l)
     input_king(tile_num[:start], king_piece)
     generate_blocking_piece(tile_num[:finish], shift_blocking_piece, knight_piece)

@@ -11,8 +11,8 @@ describe MoveRook do
   include Coordinates
   include ChessPieces
   let(:chess) { Chess.new }
-  let(:move_white_rook) {MoveRook.new(0, 0, chess.board, ChessPieces::WHITE_PIECES)}
-  let(:move_black_rook) {MoveRook.new(0, 0, chess.board, ChessPieces::BLACK_PIECES)}
+  let(:move_white_rook) {MoveRook.new(0, 0, chess.board, ChessPieces::WHITE_PIECES, 0)}
+  let(:move_black_rook) {MoveRook.new(0, 0, chess.board, ChessPieces::BLACK_PIECES, 0)}
 
   def generate_start_and_finish_tile_num(n, l, shift_factor_n, shift_factor_l)
     start = convert_coordinates_to_num(generate_coordinates(n, l))
